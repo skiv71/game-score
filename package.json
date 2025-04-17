@@ -1,0 +1,23 @@
+{
+  "name": "game-score",
+  "version": "1.0.0",
+  "description": "Game score",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
+    "clean": "npx rimraf dist"
+  },
+  "author": "Neil Duffy <skivy71@gmail.com>",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^22.14.1",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@types/express": "^5.0.1",
+    "express": "^5.1.0"
+  }
+}
