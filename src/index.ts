@@ -5,12 +5,12 @@ import express, {
 
 import 'dotenv/config'
 
-import { Users }  from "./db/users"
+import db from "./db"
 
 const app = express()
 
 app.get(`/`, async (req: Request, res: Response) => {
-    const users = await Users.find().toArray()
+    const users = await db.users.find().toArray()
     res.send(users)
 })
 

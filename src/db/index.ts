@@ -1,19 +1,24 @@
 import {
     MongoClient,
-    Db,
-    Document
+    Db
 } from "mongodb"
 
-import config from "../config"
+import { User } from "./models"
 
-export interface Model extends Document {
-    _id: number,
-    _created: Date,
-    _updated: Date
-}
+const {
+    DB_URL = `localhost`,
+    DB_PORT = 27017,
+    DB_USER = `mongo`,
+    DB_PASS = `mongo`,
+    DB_NAME = `default`
+} = process.env
 
-export function mongoDB(
-    url: string = config.MONGODB_URL
-): Db {
-    return new MongoClient(url).db()
+const mongoURL = `mongodb://${DB_USER}:${DB_PASS}@${DB_URL}:${DB_PORT}/${DB_NAME}`
+
+const mongoDB = (db: string = DB_NAME): Db => new MongoClient(mongoURL).db(db)
+
+export default {
+    get users() {
+        return mongoDB().collection<User>(`users`)
+    }
 }
