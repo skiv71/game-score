@@ -3,11 +3,15 @@ import express, {
     Response
 } from "express"
 
+import 'dotenv/config'
+
+import { Users }  from "./db/users"
+
 const app = express()
 
-app.get(`/`, (req: Request, res: Response) => {
-    console.log(req.headers)
-    res.send(`Welcome!`)
+app.get(`/`, async (req: Request, res: Response) => {
+    const users = await Users.find().toArray()
+    res.send(users)
 })
 
 app.listen(80)
