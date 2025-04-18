@@ -8,6 +8,6 @@ export const MONGO = {
 
 export const MAIL = {
     HOST: process.env.MAIL_HOST || `https://api.mailjet.com/v3.1/send`,
-    PUBLIC_KEY: process.env.MAIL_PUBLIC_KEY || ``,
-    PRIVATE_KEY: process.env.MAIL_PRIVATE_KEY || ``
+    API_KEY: process.env.MAIL_API_KEY || ``,
+    SECRET: process.env.MAIL_SECRET || ``
 }

@@ -7,7 +7,7 @@ import { getUsers } from "./db"
 
 import { createHash } from "crypto"
 
-import Email, { Contact, MessageData } from "./mail"
+import Mail, { MessageData } from "./mail"
 
 const app = express()
 
@@ -18,10 +18,10 @@ app.get(`/`, async (req: Request, res: Response) => {
     const b = hash.update(email)
     const hex = b.digest(`hex`)
 
-    const sender: Contact = { name: `admin`, email: `admin@codingclub.co.uk` }
-    const recipient: Contact = { name: `Neil Duffy`, email }
-    const data: MessageData = { text: `Here's you key: ${hex}` }
-    const mail = new Email(sender, recipient, `Hello`, data)
+    const sender = Mail.contact(`admin`, `admin@codingclub.co.uk`)
+    const recipient = Mail.contact(`Neil Duffy`, email)
+    const data =  Mail.messageData(`Here's you key: ${hex}`)
+    const mail = new Mail(sender, recipient, `Hello`, data)
     const r = await mail.send()
     console.log(r)
 //    const users = await getUsers().find().toArray()

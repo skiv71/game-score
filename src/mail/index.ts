@@ -42,7 +42,7 @@ export default class Mail {
     }
 
     private requestAuth(): string {
-        const base64 = Buffer.from([MAIL.PUBLIC_KEY, MAIL.PRIVATE_KEY].join(`:`))
+        const base64 = Buffer.from([MAIL.API_KEY, MAIL.SECRET].join(`:`))
             .toString(`base64`)
         return [`Basic`, base64]
             .join(` `)
@@ -53,6 +53,26 @@ export default class Mail {
         headers.set(`content-type`, `application/json`)
         headers.set(`authorization`, this.requestAuth())
         return headers
+    }
+
+    public static contact(
+        name: string,
+        email: string
+    ): Contact {
+        return {
+            name,
+            email
+        }
+    }
+
+    public static messageData(
+        text?: string,
+        html?: string
+    ): MessageData {
+        return {
+            text,
+            html
+        }
     }
     
     public send(): Promise<Response> {
