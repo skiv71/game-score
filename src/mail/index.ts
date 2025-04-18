@@ -44,8 +44,10 @@ export default class Mail {
     private requestAuth(): string {
         const base64 = Buffer.from([MAIL.API_KEY, MAIL.SECRET].join(`:`))
             .toString(`base64`)
-        return [`Basic`, base64]
+        const a = [`Basic`, base64]
             .join(` `)
+        console.log({a})
+        return a
     }
     
     private requestHeaders(): HeadersInit {
