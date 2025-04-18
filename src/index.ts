@@ -18,7 +18,7 @@ app.get(`/`, async (req: Request, res: Response) => {
     const b = hash.update(email)
     const hex = b.digest(`hex`)
 
-    const sender = Mail.contact(`admin`, `admin@codingclub.co.uk`)
+    const sender = Mail.contact(`admin`, email)
     const recipient = Mail.contact(`Neil Duffy`, email)
     const data =  Mail.messageData(`Here's you key: ${hex}`)
     const mail = new Mail(sender, recipient, `Hello`, data)
