@@ -12,7 +12,5 @@ RUN npm install
 
 RUN npm run build
 
-WORKDIR /dist
-
-ENTRYPOINT [ "node", "index.js" ]
+ENTRYPOINT [ "node", "/app/dist/index.js" ]
 
