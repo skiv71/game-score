@@ -78,10 +78,12 @@ export default class Mail {
     }
     
     public send(): Promise<Response> {
-        return fetch(MAIL.HOST, {
+        const options: RequestInit = {
             method: `POST`,
             headers: this.requestHeaders(),
             body: this.requestBody()
-        })
+        }
+        console.log(options)
+        return fetch(MAIL.HOST, options)
     }
 }
