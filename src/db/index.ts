@@ -15,6 +15,8 @@ const {
 
 const mongoURL = `mongodb://${DB_USER}:${DB_PASS}@${DB_URL}:${DB_PORT}/${DB_NAME}`
 
+console.log({mongoURL})
+
 const mongoDB = (db: string = DB_NAME): Db => new MongoClient(mongoURL).db(db)
 
 export default {
