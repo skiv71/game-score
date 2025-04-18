@@ -3,12 +3,12 @@ import express, {
     Response
 } from "express"
 
-import db from "./db"
+import { getUsers } from "./db"
 
 const app = express()
 
 app.get(`/`, async (req: Request, res: Response) => {
-    const users = await db.users().find().toArray()
+    const users = await getUsers().find().toArray()
     res.send(users)
 })
 
