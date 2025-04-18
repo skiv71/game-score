@@ -8,7 +8,7 @@ import db from "./db"
 const app = express()
 
 app.get(`/`, async (req: Request, res: Response) => {
-    const users = await db.users.find().toArray()
+    const users = await db.users().find().toArray()
     res.send(users)
 })
 

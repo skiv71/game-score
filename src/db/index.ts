@@ -19,8 +19,8 @@ console.log({mongoURL})
 
 const mongoDB = (db: string = DB_NAME): Db => new MongoClient(mongoURL).db(db)
 
+const users = () => mongoDB().collection<User>(`users`)
+
 export default {
-    get users() {
-        return mongoDB().collection<User>(`users`)
-    }
+    users
 }
