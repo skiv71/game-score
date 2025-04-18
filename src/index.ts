@@ -3,8 +3,6 @@ import express, {
     Response
 } from "express"
 
-import 'dotenv/config'
-
 import db from "./db"
 
 const app = express()
@@ -15,4 +13,3 @@ app.get(`/`, async (req: Request, res: Response) => {
 })
 
 app.listen(80)
-
