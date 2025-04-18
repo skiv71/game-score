@@ -12,7 +12,7 @@ export type MessageData = {
 
 type Message = {
     from: Contact,
-    to: Contact,
+    to: Contact[],
     subject: string,
     textPart: string,
     htmlPart: string
@@ -30,7 +30,7 @@ export default class Mail {
     private message(): Message {
         return {
             from: this.sender,
-            to: this.recipient,
+            to: [this.recipient],
             subject: this.subject,
             textPart: this.data.text || ``,
             htmlPart: this.data.html || `` 
