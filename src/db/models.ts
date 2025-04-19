@@ -1,20 +1,49 @@
 import { ObjectId } from "mongodb"
 
-export interface Model {
-    _created: Date,
-    _updated: Date
+import { generateToken } from "../token"
+
+class Model {
+
+    public _id: ObjectId
+    public _created: Date
+    public _updated: Date
+
+    constructor() {
+        this._id = new ObjectId()
+        const d = new Date
+        this._created = d
+        this._updated = d
+    }
+
 }
 
-export interface Game {
-    name: string
+export class Game extends Model {
+
+    constructor(
+        public name: string
+    ) {
+        super()
+    }
 }
 
-export interface User {
-    email: string
+export class Token extends Model {
+
+    public active = false
+    public data = generateToken()
+
+    constructor(
+        public gameId: ObjectId | string,
+        public userId: ObjectId | string
+    ) {
+        super()
+    }
 }
 
-export interface Token {
-    userId: ObjectId,
-    gameId: ObjectId,
-    data: string
+export class User extends Model {
+
+    constructor(
+        public email: string
+    ) {
+        super()
+    }
 }

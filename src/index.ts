@@ -15,7 +15,7 @@ import router from "./router"
 
 const app = express()
 
-app.use(router)
+app.use(express.json(), router)
 
 //app.get(`/`, async (req: Request, res: Response) => {
   //  res.send(generateToken())

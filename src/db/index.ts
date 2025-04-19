@@ -2,10 +2,10 @@ import {
     MongoClient,
     MongoClientOptions,
     Db,
-    Collection
+    Collection,
+    Document,
+    ObjectId
 } from "mongodb"
-
-import { Game, User } from "./models"
 
 import { MONGO } from "../config"
 
@@ -28,13 +28,21 @@ const client: Client = {
     }
 }
 
-const mongoDB = (): Db => new MongoClient(client.url, client.options).db(MONGO.DB_NAME)
+export const mongoDB = (): Db => new MongoClient(client.url, client.options).db(MONGO.DB_NAME)
 
-const users = (): Collection<User> => mongoDB().collection<User>(`users`)
+export type Collections = `games` | `tokens` | `users`
 
-const games = (): Collection<Game> => mongoDB().collection<Game>(`games`)
+export function getCollection<T extends Document>(
+    collection: Collections
+): Collection<T> {
+    return mongoDB()
+        .collection<T>(collection)
+}
 
-export default {
-    games,
-    users
+export function documentId(
+    id?: string
+): ObjectId | null {
+    return id
+        ? ObjectId.isValid(id) ? new ObjectId(id) : null
+        : new ObjectId()
 }
