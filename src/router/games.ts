@@ -7,22 +7,13 @@ import { getCollection } from "../db"
 
 import { Game } from "../db/models"
 
+import { getDocuments } from "./shared"
+
 import { MESSAGE } from "../config"
 
-export async function getGames(
-    req: Request,
-    res: Response
-) {
-    try {
-        const games = await getCollection<Game>(`games`)
-            .find()
-            .toArray()
-        res.send(games)
-    } catch(e) {
-        console.error(e)
-        res.status(500).send(MESSAGE.SERVER_ERROR)
-    }
-}
+export const getGames = getDocuments(
+    getCollection<Game>(`games`)
+)
 
 export async function createGame(
     req: Request,

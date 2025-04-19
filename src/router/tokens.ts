@@ -163,16 +163,3 @@ export async function createToken(
 export const getTokens = getDocuments(
     getCollection<Token>(`tokens`)
 )
-//     req: Request,
-//     res: Response
-// ): Promise<void> {
-//     try {
-//         const tokens = await getCollection<Token>(`tokens`)
-//             .find()
-//             .toArray()
-//         res.send(tokens)
-//     } catch(e) {
-//         console.error(e)
-//         res.status(500).send(MESSAGE.SERVER_ERROR)
-//     }
-// }

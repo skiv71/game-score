@@ -11,6 +11,8 @@ import {
     getTokens
 } from './tokens'
 
+import { getUsers } from './users'
+
 const router = express.Router()
 
 router
@@ -21,5 +23,8 @@ router
     .get(`/tokens`, getTokens)
     .get(`/tokens/activate`, activateToken)
     .post(`/tokens`, createToken)
+
+router
+    .get(`/users`, getUsers)
 
 export default router
