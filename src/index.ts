@@ -1,20 +1,24 @@
 import express, {
-    Request,
-    Response
+    // Request,
+    // Response
 } from "express"
 
-import { getUsers } from "./db"
+import router from "./router"
 
-import { createHash } from "crypto"
+// import { getUsers } from "./db"
 
-import Mail, { MessageData } from "./mail"
+// import { createHash } from "crypto"
 
-import { generateToken } from "./token"
+// import Mail, { MessageData } from "./mail"
+
+// import { generateToken } from "./token"
 
 const app = express()
 
-app.get(`/`, async (req: Request, res: Response) => {
-    res.send(generateToken())
+app.use(router)
+
+//app.get(`/`, async (req: Request, res: Response) => {
+  //  res.send(generateToken())
 //     const hash = createHash(`sha256`)
     
 //     const email = `skivy71@gmail.com`
@@ -29,6 +33,6 @@ app.get(`/`, async (req: Request, res: Response) => {
 //     console.log(r)
 // //    const users = await getUsers().find().toArray()
 //     res.send(hex)
-})
+//})
 
 app.listen(80)

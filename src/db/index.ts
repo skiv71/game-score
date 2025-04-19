@@ -5,7 +5,7 @@ import {
     Collection
 } from "mongodb"
 
-import { User } from "./models"
+import { Game, User } from "./models"
 
 import { MONGO } from "../config"
 
@@ -30,4 +30,11 @@ const client: Client = {
 
 const mongoDB = (): Db => new MongoClient(client.url, client.options).db(MONGO.DB_NAME)
 
-export const getUsers = (): Collection<User> => mongoDB().collection<User>(`users`)
+const users = (): Collection<User> => mongoDB().collection<User>(`users`)
+
+const games = (): Collection<Game> => mongoDB().collection<Game>(`games`)
+
+export default {
+    games,
+    users
+}
