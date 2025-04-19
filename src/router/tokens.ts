@@ -134,9 +134,8 @@ export async function createToken(
             res.status(400).send(`Invalid gameId!`)
             return
         }
-        const [game] = await getCollection<Game>(`games`)
-            .find({ gameId })
-            .toArray()
+        const game = await getCollection<Game>(`games`)
+            .findOne({ _id: gameId })
         if (!game) {
             res.status(400).send(`Invalid gameId!`)
             return
