@@ -1,3 +1,3 @@
 import { randomBytes } from "crypto"
 
-export const generateToken = (): string => randomBytes(32).toString(`hex`)
+export const generateToken = (bytes: number = 64): string => randomBytes(bytes).toString(`hex`)
