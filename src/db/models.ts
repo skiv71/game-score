@@ -1,10 +1,20 @@
-interface Model {
-    _id: number,
+import { ObjectId } from "mongodb"
+
+export interface Model {
     _created: Date,
     _updated: Date
 }
 
-export interface User extends Model {
+export interface Game {
+    name: string
+}
+
+export interface User {
     email: string
-    token: string
+}
+
+export interface Token {
+    userId: ObjectId,
+    gameId: ObjectId,
+    data: string
 }
