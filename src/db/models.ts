@@ -32,8 +32,8 @@ export class Token extends Model {
     public data = generateToken()
 
     constructor(
-        public gameId: ObjectId | string,
-        public userId: ObjectId | string
+        public gameId: ObjectId,
+        public userId: ObjectId
     ) {
         super()
     }

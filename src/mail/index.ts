@@ -20,20 +20,22 @@ type Message = {
 
 export default class Mail {
 
+    public text = ``
+    public html = ``
+
     constructor(
-        public sender: Contact,
-        public recipient: Contact,
-        public subject: string,
-        public data: MessageData
+        readonly sender: Contact,
+        readonly recipient: Contact,
+        readonly subject: string
     ) {}
 
     private message(): Message {
         return {
             from: this.sender,
             to: [this.recipient],
-            subject: this.subject,
-            textPart: this.data.text || ``,
-            htmlPart: this.data.html || `` 
+            subject: this.subject || `No Subject`,
+            textPart: this.text || ``,
+            htmlPart: this.html || `` 
         }
     }
 
@@ -44,10 +46,7 @@ export default class Mail {
     private requestAuth(): string {
         const base64 = Buffer.from([MAIL.API_KEY, MAIL.SECRET].join(`:`))
             .toString(`base64`)
-        const a = [`Basic`, base64]
-            .join(` `)
-        console.log({a})
-        return a
+        return `Basic ${base64}`
     }
     
     private requestHeaders(): HeadersInit {
@@ -67,23 +66,12 @@ export default class Mail {
         }
     }
 
-    public static messageData(
-        text?: string,
-        html?: string
-    ): MessageData {
-        return {
-            text,
-            html
-        }
-    }
-    
     public send(): Promise<Response> {
         const options: RequestInit = {
             method: `POST`,
             headers: this.requestHeaders(),
             body: this.requestBody()
         }
-        console.log(options)
         return fetch(MAIL.HOST, options)
     }
 }

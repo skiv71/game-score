@@ -11,3 +11,13 @@ export const MAIL = {
     API_KEY: process.env.MAIL_API_KEY || ``,
     SECRET: process.env.MAIL_SECRET || ``
 }
+
+export const ADMIN = {
+    NAME: `admin`,
+    EMAIL: `skivy71@gmail.com`,
+    HOST: `https://default-game-score.1guv9s.easypanel.host/`
+}
+
+export const MESSAGE = {
+    SERVER_ERROR: `A server error has occurred!`
+}

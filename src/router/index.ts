@@ -6,6 +6,7 @@ import {
 } from './games'
 
 import {
+    activateToken,
     createToken,
     getTokens
 } from './tokens'
@@ -18,6 +19,7 @@ router
 
 router
     .get(`/tokens`, getTokens)
+    .get(`/tokens/activate`, activateToken)
     .post(`/tokens/create`, createToken)
 
 export default router
