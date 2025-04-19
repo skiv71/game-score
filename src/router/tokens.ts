@@ -14,6 +14,8 @@ import {
     User
 } from "../db/models"
 
+import { getDocuments } from "./shared"
+
 import Mail from "../mail"
 
 import validator from 'validator'
@@ -158,17 +160,19 @@ export async function createToken(
     }
 }
 
-export async function getTokens(
-    req: Request,
-    res: Response
-): Promise<void> {
-    try {
-        const tokens = await getCollection<Token>(`tokens`)
-            .find()
-            .toArray()
-        res.send(tokens)
-    } catch(e) {
-        console.error(e)
-        res.status(500).send(MESSAGE.SERVER_ERROR)
-    }
-}
+export const getTokens = getDocuments(
+    getCollection<Token>(`tokens`)
+)
+//     req: Request,
+//     res: Response
+// ): Promise<void> {
+//     try {
+//         const tokens = await getCollection<Token>(`tokens`)
+//             .find()
+//             .toArray()
+//         res.send(tokens)
+//     } catch(e) {
+//         console.error(e)
+//         res.status(500).send(MESSAGE.SERVER_ERROR)
+//     }
+// }
