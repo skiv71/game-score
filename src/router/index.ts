@@ -20,6 +20,6 @@ router
 router
     .get(`/tokens`, getTokens)
     .get(`/tokens/activate`, activateToken)
-    .post(`/tokens/create`, createToken)
+    .post(`/tokens`, createToken)
 
 export default router
