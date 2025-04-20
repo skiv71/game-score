@@ -23,9 +23,11 @@ import {
     MESSAGE
 } from "../config"
 
-const games = getCollection<Game>(`games`)
-const tokens = getCollection<Token>(`tokens`)
-const users = getCollection<User>(`users`)
+import { users } from "./users"
+
+import { games } from "./games"
+
+export const tokens = getCollection<Token>(`tokens`)
 
 async function createUser(
     email: string
@@ -48,8 +50,8 @@ async function activateTokenEmail(
         `${game.name} token`
     )
     const html = [
-        `<p>Thank you for activating your game token.</p>`,
-        `<p>You can now use this token within your game to track high scores.</p>`,
+        `<p>Thank you for activating your ${game.name} token.</p>`,
+        `<p>You can now use this token within your game code to save high scores.</p>`,
         `<p>Token: ${token.data}</p>`
     ].join(``)
     mail.html = html
@@ -68,7 +70,7 @@ async function createTokenEmail(
     )
     const link = new URL(`/tokens/${token._id}/`, ADMIN.HOST)
     const html = [
-        `<p>Thank you for requesting your game token.</p>`,
+        `<p>Thank you for requesting your ${game.name} token.</p>`,
         `<p>Please click the <a href=${link.href}>link</a> to activate it.</p>`,
         `<p>Note: This token will expire in 15 minutes.</p>`
     ].join(``)
@@ -81,15 +83,12 @@ export async function activateToken(
     res: Response
 ): Promise<void> {
     try {
-        console.log(`params`, req.params.id)
         const tokenId = documentId(req.params.id)
-        console.log({ tokenId })
         if (!tokenId) {
             res.status(400).send(`Invalid tokenId!`)
             return
         }
         const token = await tokens.findOne({ _id: tokenId })
-        console.log({ token })
         if (!token) {
             res.status(400).send(`Invalid tokenId`)
             return
@@ -99,13 +98,11 @@ export async function activateToken(
             return
         }
         const game = await games.findOne({ _id: token.gameId })
-        console.log({ game })
+        if (!game)
+            throw new Error(`Failed to find game with id: ${token.gameId}!`)
         const user = await users.findOne({ _id: token.userId })
-        console.log({ user })
-        if (!game || !user) {
-            res.status(500).send(MESSAGE.SERVER_ERROR)
-            return
-        }
+        if (!user)
+            throw new Error(`Failed to find user with id: ${token.userId}!`)
         await tokens.updateOne({ _id: tokenId }, { $set: { active: true }})
         await activateTokenEmail(game, user, token)
         res.send(`OK`)
@@ -138,7 +135,7 @@ export async function createToken(
             return
         }
         if (await tokens.findOne({ active: false, gameId, userId })) {
-            res.status(403).send(`Token already created!`)
+            res.status(403).send(`Inactive token still pending!`)
             return
         }
         const token = new Token(gameId, userId)

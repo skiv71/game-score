@@ -9,7 +9,7 @@ import { Game } from "../db/models"
 
 import { MESSAGE } from "../config"
 
-const games = getCollection<Game>(`games`)
+export const games = getCollection<Game>(`games`)
 
 export async function createGame(
     req: Request,

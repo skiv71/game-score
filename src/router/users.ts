@@ -9,7 +9,7 @@ import { User } from "../db/models"
 
 import { MESSAGE } from "../config"
 
-const users = getCollection<User>(`users`)
+export const users = getCollection<User>(`users`)
 
 export async function getUsers(
     req: Request,
