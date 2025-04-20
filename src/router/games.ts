@@ -7,13 +7,9 @@ import { getCollection } from "../db"
 
 import { Game } from "../db/models"
 
-import { getDocuments } from "./shared"
-
 import { MESSAGE } from "../config"
 
-export const getGames = getDocuments(
-    getCollection<Game>(`games`)
-)
+const games = getCollection<Game>(`games`)
 
 export async function createGame(
     req: Request,
@@ -25,15 +21,25 @@ export async function createGame(
             res.status(400).send(`Invalid game name!`)
             return
         }
-        const games = getCollection<Game>(`games`)
         if (await games.findOne({ name })) {
             res.status(409).send(`Game already exists!`)
             return
         }
         const game = new Game(name)
-        await getCollection<Game>(`games`)
-            .insertOne(game)
+        await games.insertOne(game)
         res.send(game)
+    } catch(e) {
+        console.error(e)
+        res.status(500).send(MESSAGE.SERVER_ERROR)
+    }
+}
+
+export async function getGames(
+    req: Request,
+    res: Response
+): Promise<void> {
+    try {
+        res.send(await games.find().toArray())
     } catch(e) {
         console.error(e)
         res.status(500).send(MESSAGE.SERVER_ERROR)

@@ -2,7 +2,7 @@ import { ObjectId } from "mongodb"
 
 import { generateToken } from "../token"
 
-class Model {
+export class Model {
 
     public _id: ObjectId
     public _created: Date

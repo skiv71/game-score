@@ -3,11 +3,12 @@ import {
     MongoClientOptions,
     Db,
     Collection,
-    Document,
     ObjectId
 } from "mongodb"
 
 import { MONGO } from "../config"
+
+import { Model } from "./models"
 
 interface Client {
     url: string
@@ -32,7 +33,7 @@ export const mongoDB = (): Db => new MongoClient(client.url, client.options).db(
 
 export type Collections = `games` | `tokens` | `users`
 
-export function getCollection<T extends Document>(
+export function getCollection<T extends Model>(
     collection: Collections
 ): Collection<T> {
     return mongoDB()

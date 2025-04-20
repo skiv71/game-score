@@ -8,6 +8,7 @@ import {
 import {
     activateToken,
     createToken,
+    deleteToken,
     getTokens
 } from './tokens'
 
@@ -23,6 +24,7 @@ router
     .get(`/tokens`, getTokens)
     .get(`/tokens/activate`, activateToken)
     .post(`/tokens`, createToken)
+    .delete(`/tokens/:id`, deleteToken)
 
 router
     .get(`/users`, getUsers)

@@ -14,8 +14,6 @@ import {
     User
 } from "../db/models"
 
-import { getDocuments } from "./shared"
-
 import Mail from "../mail"
 
 import validator from 'validator'
@@ -26,6 +24,8 @@ import {
 } from "../config"
 
 import path = require("path")
+
+const tokens = getCollection<Token>(`tokens`)
 
 async function createUser(
     email: string
@@ -94,7 +94,6 @@ export async function activateToken(
             res.status(400).send(`Invalid tokenId!`)
             return
         }
-        const tokens = getCollection<Token>(`tokens`)
         const token = await tokens.findOne({ _id: tokenId })
         if (!token) {
             res.status(400).send(`Invalid tokenId`)
@@ -144,7 +143,6 @@ export async function createToken(
             res.status(400).send(`Invalid gameId!`)
             return
         }
-        const tokens = getCollection<Token>(`tokens`)
         if (await tokens.findOne({ active: false, gameId, userId })) {
             res.status(403).send(`Token already created!`)
             return
@@ -160,6 +158,31 @@ export async function createToken(
     }
 }
 
-export const getTokens = getDocuments(
-    getCollection<Token>(`tokens`)
-)
+export async function getTokens(
+    req: Request,
+    res: Response
+): Promise<void> {
+    try {
+        res.send(await tokens.find().toArray())
+    } catch(e) {
+        console.error(e)
+        res.status(500).send(MESSAGE.SERVER_ERROR)
+    }
+}
+
+export async function deleteToken(
+    req: Request,
+    res: Response
+): Promise<void> {
+    try {
+        const _id = documentId(req.params.id)
+        if (!_id) {
+            res.status(400).send(`Invalid token id!`)
+            return
+        }
+        res.send(await tokens.deleteOne({ _id }))
+    } catch(e) {
+        console.error(e)
+        res.status(500).send(MESSAGE.SERVER_ERROR)
+    }
+}
