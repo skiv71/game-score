@@ -72,8 +72,7 @@ async function createTokenEmail(
         Mail.contact(user.email, user.email),
         `${game.name} token activation`
     )
-    const link = new URL(`/tokens/activate/`, ADMIN.HOST)
-    link.search = `tokenId=${token._id}`
+    const link = new URL(`/tokens/${token._id}/`, ADMIN.HOST)
     const html = [
         `<p>Thank you for requesting your game token.</p>`,
         `<p>Please click the <a href=${link.href}>link</a> to activate it.</p>`,
@@ -88,7 +87,7 @@ export async function activateToken(
     res: Response
 ): Promise<void> {
     try {
-        const tokenId = documentId(req.body.tokenId)
+        const tokenId = documentId(req.params.id)
         if (!tokenId) {
             res.status(400).send(`Invalid tokenId!`)
             return

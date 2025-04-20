@@ -22,7 +22,7 @@ router
 
 router
     .get(`/tokens`, getTokens)
-    .get(`/tokens/activate`, activateToken)
+    .get(`/tokens/:id`, activateToken)
     .post(`/tokens`, createToken)
     .delete(`/tokens/:id`, deleteToken)
 
