@@ -23,25 +23,19 @@ import {
     MESSAGE
 } from "../config"
 
+const games = getCollection<Game>(`games`)
 const tokens = getCollection<Token>(`tokens`)
+const users = getCollection<User>(`users`)
 
 async function createUser(
     email: string
 ): Promise<User> {
     const user = new User(email)
-    await getCollection<User>(`users`)
-        .insertOne(user)
+    await users.insertOne(user)
     return user
 }
 
-async function getUser(
-    email: string
-): Promise<User | undefined> {
-    const [user] = await getCollection<User>(`users`)
-        .find({ email })
-        .toArray()
-    return user
-}
+const getUser = (email: string): Promise<User | null> => users.findOne({ email })
 
 async function activateTokenEmail(
     game: Game,
@@ -89,6 +83,7 @@ export async function activateToken(
     try {
         console.log(`params`, req.params.id)
         const tokenId = documentId(req.params.id)
+        console.log({ tokenId })
         if (!tokenId) {
             res.status(400).send(`Invalid tokenId!`)
             return
@@ -102,10 +97,8 @@ export async function activateToken(
             res.status(403).send(`Token already active!`)
             return
         }
-        const game = await getCollection<Game>(`games`)
-            .findOne({ tokenId })
-        const user = await getCollection<User>(`users`)
-            .findOne({ _id: token.userId })
+        const game = await games.findOne({ tokenId })
+        const user = await users.findOne({ _id: token.userId })
         if (!game || !user) {
             res.status(500).send(MESSAGE.SERVER_ERROR)
             return
@@ -136,8 +129,7 @@ export async function createToken(
             res.status(400).send(`Invalid gameId!`)
             return
         }
-        const game = await getCollection<Game>(`games`)
-            .findOne({ _id: gameId })
+        const game = await games.findOne({ _id: gameId })
         if (!game) {
             res.status(400).send(`Invalid gameId!`)
             return
@@ -147,8 +139,7 @@ export async function createToken(
             return
         }
         const token = new Token(gameId, userId)
-        await getCollection<Token>(`tokens`)
-            .insertOne(token)
+        await tokens.insertOne(token)
         await createTokenEmail(game, user, token)
         res.send(token)
     } catch(e) {
