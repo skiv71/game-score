@@ -98,7 +98,7 @@ export async function activateToken(
             res.status(403).send(`Token already active!`)
             return
         }
-        const game = await games.findOne({ tokenId })
+        const game = await games.findOne({ _id: token.gameId })
         console.log({ game })
         const user = await users.findOne({ _id: token.userId })
         console.log({ user })
