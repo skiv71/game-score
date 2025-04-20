@@ -23,8 +23,6 @@ import {
     MESSAGE
 } from "../config"
 
-import path = require("path")
-
 const tokens = getCollection<Token>(`tokens`)
 
 async function createUser(
@@ -74,10 +72,11 @@ async function createTokenEmail(
         Mail.contact(user.email, user.email),
         `${game.name} token activation`
     )
-    const link = path.join(ADMIN.HOST, `/tokens/activate?tokenId=${token._id}`)
+    const link = new URL(`/tokens/activate/`, ADMIN.HOST)
+    link.search = `tokenId=${token._id}`
     const html = [
         `<p>Thank you for requesting your game token.</p>`,
-        `<p>Please click the <a href=${link}>link</a> to activate it.</p>`,
+        `<p>Please click the <a href=${link.href}>link</a> to activate it.</p>`,
         `<p>Note: This token will expire in 15 minutes.</p>`
     ].join(``)
     mail.html = html
