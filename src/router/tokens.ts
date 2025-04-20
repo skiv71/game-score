@@ -87,6 +87,7 @@ export async function activateToken(
     res: Response
 ): Promise<void> {
     try {
+        console.log(`params`, req.params.id)
         const tokenId = documentId(req.params.id)
         if (!tokenId) {
             res.status(400).send(`Invalid tokenId!`)
