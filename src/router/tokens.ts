@@ -89,6 +89,7 @@ export async function activateToken(
             return
         }
         const token = await tokens.findOne({ _id: tokenId })
+        console.log({ token })
         if (!token) {
             res.status(400).send(`Invalid tokenId`)
             return
@@ -98,7 +99,9 @@ export async function activateToken(
             return
         }
         const game = await games.findOne({ tokenId })
+        console.log({ game })
         const user = await users.findOne({ _id: token.userId })
+        console.log({ user })
         if (!game || !user) {
             res.status(500).send(MESSAGE.SERVER_ERROR)
             return
