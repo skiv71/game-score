@@ -124,23 +124,6 @@ class CustomError extends Error {
     }
 }
 
-
-async function existingToken(
-    game: Game,
-    user: User
-): Promise<void> {
-    const { _id: gameId } = game
-    const { _id: userId } = user
-    let existing = await tokens
-        .find({ gameId, userId })
-        .toArray()
-    if (!existing.length)
-        return
-    // if (existing.find(o => o.active))
-    //     throw new CustomError(`Duplicate token awaiting activation!`, 409)
-    await tokens.deleteMany({ gameId, userId })
-}
-
 export async function createToken(
     req: Request,
     res: Response
@@ -163,15 +146,11 @@ export async function createToken(
             res.status(400).send(`Invalid gameId!`)
             return
         }
-        try {
-            await existingToken(game, user)
-        } catch(e) {
-            if (e !instanceof CustomError) {
-                res.status(e.code).send(e.message)
-            } else {
-                throw e
-            }
+        if (await tokens.findOne({ gameId, userId, active: false })) {
+            res.status(409).send(`Pending token awating activation!`)
+            return
         }
+        await tokens.deleteMany({ gameId, userId })
         const token = new Token({ gameId, userId })
         await tokens.insertOne(token)
         await createTokenEmail(game, user, token)
