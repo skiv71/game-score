@@ -136,8 +136,8 @@ async function existingToken(
         .toArray()
     if (!existing.length)
         return
-    if (existing.find(o => o.active))
-        throw new CustomError(`Duplicate token awaiting activation!`, 409)
+    // if (existing.find(o => o.active))
+    //     throw new CustomError(`Duplicate token awaiting activation!`, 409)
     await tokens.deleteMany({ gameId, userId })
 }
 
