@@ -113,16 +113,6 @@ export async function activateToken(
     }
 }
 
-class CustomError extends Error {
-
-    constructor(
-        public message: string,
-        public code:number
-    ) {
-        super()
-    }
-}
-
 export async function createToken(
     req: Request,
     res: Response

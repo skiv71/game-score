@@ -5,7 +5,7 @@ import {
 
 import { getCollection } from "../db"
 
-import { User } from "../db/models"
+import User from "../db/models/user"
 
 import { MESSAGE } from "../config"
 

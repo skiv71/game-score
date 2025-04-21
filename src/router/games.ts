@@ -5,7 +5,7 @@ import {
 
 import { getCollection } from "../db"
 
-import { Game } from "../db/models"
+import Game from "../db/models/game"
 
 import { MESSAGE } from "../config"
 
