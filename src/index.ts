@@ -6,10 +6,26 @@ import { getCollection } from "./db"
 
 import Token from "./db/models/token"
 
+import { TOKEN } from "./config"
+
 async function init(): Promise<void> {
-  const indexes = await getCollection<Token>(`tokens`).indexes()
-  console.log(indexes)
-  
+    const tokens = getCollection<Token>(`tokens`)
+    const indexes = await tokens.indexes()
+    console.log(indexes)
+    const index = indexes
+        .find(o => o.name == TOKEN.INACTIVE_PURGE.NAME)
+    if (!index) {
+        console.log(`adding index`)
+        await tokens.createIndex(
+            {
+                _created: 1
+            },
+            {
+                expireAfterSeconds: TOKEN.INACTIVE_PURGE.TTL,
+                name: TOKEN.INACTIVE_PURGE.NAME
+            }
+        )
+  }
 }
 
 function listen(): void {
