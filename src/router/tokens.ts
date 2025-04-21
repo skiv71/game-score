@@ -129,12 +129,16 @@ async function existingToken(
     game: Game,
     user: User
 ): Promise<void> {
-    let token = await tokens.findOne({ gameId: game._id, userId: user._id })
-    if (token) {
-        if (!token.active)
-            throw new CustomError(`Duplicate token awaiting activation!`, 409)
-        await tokens.deleteOne({ _id: token._id })
-    }
+    const { _id: gameId } = game
+    const { _id: userId } = user
+    let existing = await tokens
+        .find({ gameId, userId })
+        .toArray()
+    if (!existing.length)
+        return
+    if (existing.find(o => o.active))
+        throw new CustomError(`Duplicate token awaiting activation!`, 409)
+    await tokens.deleteMany({ gameId, userId })
 }
 
 export async function createToken(
