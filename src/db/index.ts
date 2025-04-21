@@ -8,7 +8,7 @@ import {
 
 import { MONGO } from "../config"
 
-import { Model } from "./models"
+import { Model } from "./model"
 
 interface Client {
     url: string
@@ -33,7 +33,7 @@ export const mongoDB = (): Db => new MongoClient(client.url, client.options).db(
 
 export type Collections = `games` | `tokens` | `users`
 
-export function getCollection<T extends Model>(
+export function getCollection<T extends Model<T>>(
     collection: Collections
 ): Collection<T> {
     return mongoDB()

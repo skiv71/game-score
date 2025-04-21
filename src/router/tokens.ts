@@ -32,7 +32,7 @@ export const tokens = getCollection<Token>(`tokens`)
 async function createUser(
     email: string
 ): Promise<User> {
-    const user = new User(email)
+    const user = new User({ email })
     await users.insertOne(user)
     return user
 }
@@ -103,7 +103,9 @@ export async function activateToken(
         const user = await users.findOne({ _id: token.userId })
         if (!user)
             throw new Error(`Failed to find user with id: ${token.userId}!`)
-        await tokens.updateOne({ _id: tokenId }, { $set: { active: true }})
+        const updatedToken = new Token(token)
+        updatedToken.active = true
+        await tokens.updateOne({ _id: tokenId }, { $set: updatedToken })
         await activateTokenEmail(game, user, token)
         res.send(`OK`)
     } catch(e) {
@@ -138,7 +140,7 @@ export async function createToken(
             res.status(403).send(`Inactive token still pending!`)
             return
         }
-        const token = new Token(gameId, userId)
+        const token = new Token({ gameId, userId })
         await tokens.insertOne(token)
         await createTokenEmail(game, user, token)
         res.send(token)

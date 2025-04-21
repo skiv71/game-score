@@ -25,7 +25,7 @@ export async function createGame(
             res.status(409).send(`Game already exists!`)
             return
         }
-        const game = new Game(name)
+        const game = new Game({ name })
         await games.insertOne(game)
         res.send(game)
     } catch(e) {
