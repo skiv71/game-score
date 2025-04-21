@@ -3,39 +3,24 @@ import {
     Model
 } from "../model"
 
-import { ObjectId } from "mongodb"
-
 import { randomBytes } from "crypto"
 
-interface IGame extends IModel {
-    name: string
-}
-
-export class Game extends Model<IGame> {
-
-    public name: string
-
-    constructor(
-        game: IGame
-    ) {
-        super(game)
-        this.name = game.name
-    }
-
-}
+import { ObjectId } from "mongodb"
 
 interface IToken extends IModel {
     active?: boolean
     data?: string
     gameId: ObjectId
+    gameURL?: string
     userId: ObjectId
 }
 
-export class Token extends Model<IToken> {
+export default class Token extends Model<IToken> {
 
     public active: boolean
     public data: string
     public gameId: ObjectId
+    public gameURL: string
     public userId: ObjectId
 
     constructor(
@@ -49,23 +34,8 @@ export class Token extends Model<IToken> {
             ? token.data
             : randomBytes(32).toString(`hex`)
         this.gameId = token.gameId
+        this.gameURL = token.gameURL || ``
         this.userId = token.userId
     }
-}
-
-interface IUser {
-    email: string
-}
-
-export class User extends Model<IUser> {
-
-    public email: string
-
-    constructor(
-        user: IUser
-    ) {
-        super(user)
-        this.email = user.email
-    }
-
+    
 }

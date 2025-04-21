@@ -8,11 +8,11 @@ import {
     getCollection
 } from "../db"
 
-import {
-    Game,
-    Token,
-    User
-} from "../db/models"
+import Game from "../db/models/game"
+
+import Token from "../db/models/token"
+
+import User from "../db/models/user"
 
 import Mail from "../mail"
 
@@ -26,7 +26,6 @@ import {
 import { users } from "./users"
 
 import { games } from "./games"
-import { ObjectId } from "mongodb"
 
 export const tokens = getCollection<Token>(`tokens`)
 
@@ -129,7 +128,7 @@ export async function createToken(
     res: Response
 ): Promise<void> {
     try {
-        const { email } = req.body
+        const { email, gameURL } = req.body
         if (!validator.isEmail(email)) {
             res.status(400).send(`Invalid email address!`)
             return
@@ -151,7 +150,7 @@ export async function createToken(
             return
         }
         await tokens.deleteMany({ gameId, userId })
-        const token = new Token({ gameId, userId })
+        const token = new Token({ gameId, gameURL, userId })
         await tokens.insertOne(token)
         await createTokenEmail(game, user, token)
         res.send(token)
