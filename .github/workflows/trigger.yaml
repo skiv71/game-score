@@ -1,0 +1,14 @@
+name: EasyPanel Trigger
+on:
+    push:
+        branches:
+            - main
+jobs:
+  deployment:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Trigger build
+      uses: fjogeleit/http-request-action@v1
+      with:
+        url: ${{ secrets.EASYPANEL_URL }}
+        method: 'POST'
