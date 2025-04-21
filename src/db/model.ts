@@ -1,9 +1,9 @@
 import { ObjectId } from "mongodb"
 
 export interface IModel {
-    _id?: ObjectId
-    _created?: Date
-    _updated?: Date
+    readonly _id?: ObjectId
+    readonly _created?: Date
+    readonly _updated?: Date
 }
 
 export class Model<T> {

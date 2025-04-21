@@ -26,6 +26,7 @@ import {
 import { users } from "./users"
 
 import { games } from "./games"
+import { ObjectId } from "mongodb"
 
 export const tokens = getCollection<Token>(`tokens`)
 
@@ -103,14 +104,36 @@ export async function activateToken(
         const user = await users.findOne({ _id: token.userId })
         if (!user)
             throw new Error(`Failed to find user with id: ${token.userId}!`)
-        const updatedToken = new Token(token)
-        updatedToken.active = true
-        await tokens.updateOne({ _id: tokenId }, { $set: updatedToken })
+        token.active = true
+        await tokens.updateOne({ _id: tokenId }, { $set: new Token(token) })
         await activateTokenEmail(game, user, token)
         res.send(`OK`)
     } catch(e) {
         console.error(e)
         res.status(500).send(MESSAGE.SERVER_ERROR)
+    }
+}
+
+class CustomError extends Error {
+
+    constructor(
+        public message: string,
+        public code:number
+    ) {
+        super()
+    }
+}
+
+
+async function existingToken(
+    game: Game,
+    user: User
+): Promise<void> {
+    let token = await tokens.findOne({ gameId: game._id, userId: user._id })
+    if (token) {
+        if (!token.active)
+            throw new CustomError(`Duplicate token awaiting activation!`, 409)
+        await tokens.deleteOne({ _id: token._id })
     }
 }
 
@@ -136,9 +159,14 @@ export async function createToken(
             res.status(400).send(`Invalid gameId!`)
             return
         }
-        if (await tokens.findOne({ active: false, gameId, userId })) {
-            res.status(403).send(`Inactive token still pending!`)
-            return
+        try {
+            await existingToken(game, user)
+        } catch(e) {
+            if (e !instanceof CustomError) {
+                res.status(e.code).send(e.message)
+            } else {
+                throw e
+            }
         }
         const token = new Token({ gameId, userId })
         await tokens.insertOne(token)
