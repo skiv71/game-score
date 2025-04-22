@@ -1,6 +1,7 @@
 import {
     IModel,
-    Model
+    Model,
+    ModelIndex
 } from "../model"
 
 interface IUser extends IModel {
@@ -19,3 +20,5 @@ export default class User extends Model<IUser> {
     }
 
 }
+
+export const userIndexes: ModelIndex<IUser>[] = []

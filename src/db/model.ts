@@ -1,4 +1,7 @@
-import { ObjectId } from "mongodb"
+import {
+    CreateIndexesOptions,
+    ObjectId
+} from "mongodb"
 
 export interface IModel {
     readonly _id?: ObjectId
@@ -21,4 +24,21 @@ export class Model<T> {
         this._updated = d
     }
 
+}
+
+type ModelIndexFilter<T> = Partial<{
+    [K in keyof T]: T[K]
+}>
+
+type IndexKeyValue = -1 | 0 | 1
+
+type ModelIndexKeys<T> = Partial<Record<keyof T, IndexKeyValue>>
+
+type ModelIndexOptions<T> = CreateIndexesOptions & {
+    partialFilterExpression?: ModelIndexFilter<T>
+}
+
+export type ModelIndex<T> = {
+    keys: ModelIndexKeys<T>,
+    options: ModelIndexOptions<T>
 }

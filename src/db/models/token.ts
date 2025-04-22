@@ -1,6 +1,7 @@
 import {
     IModel,
-    Model
+    Model,
+    ModelIndex
 } from "../model"
 
 import { randomBytes } from "crypto"
@@ -37,5 +38,22 @@ export default class Token extends Model<IToken> {
         this.gameURL = token.gameURL || ``
         this.userId = token.userId
     }
-    
+
 }
+
+const tokenPurge: ModelIndex<IToken> = {
+    keys: {
+        _created: 1
+    },
+    options: {
+        expireAfterSeconds: 900,
+        name: `token_inactive-purge`,
+        partialFilterExpression: {
+            active: false
+        }
+    }
+}
+
+export const tokenIndexes: ModelIndex<IToken>[] = [
+    tokenPurge
+]

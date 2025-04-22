@@ -1,42 +1,28 @@
 import {
-    MongoClient,
-    MongoClientOptions,
-    Db,
     Collection,
-    ObjectId
+    ObjectId,
+    IndexDescriptionInfo
 } from "mongodb"
+
+import Client from "./client"
 
 import { MONGO } from "../config"
 
 import { Model } from "./model"
 
-interface Client {
-    url: string
-    options: MongoClientOptions
-}
+import Token, {
+    tokenIndexes
+} from "./models/token"
 
-const client: Client = {
-    get options() {
-        return {
-            auth: {
-                username: MONGO.DB_USER,
-                password: MONGO.DB_PASS
-            }
-        } as const
-    },
-    get url() {
-        return `mongodb://${MONGO.DB_HOST}:${MONGO.DB_PORT}`
-    }
-}
+export const collections = [`games`, `tokens`, `users`] as const
 
-export const mongoDB = (): Db => new MongoClient(client.url, client.options).db(MONGO.DB_NAME)
-
-export type Collections = `games` | `tokens` | `users`
+export type Collections = typeof collections[number]
 
 export function getCollection<T extends Model<T>>(
     collection: Collections
 ): Collection<T> {
-    return mongoDB()
+    return new Client()
+        .db(MONGO.DB_NAME)
         .collection<T>(collection)
 }
 
@@ -46,4 +32,23 @@ export function documentId(
     return id
         ? ObjectId.isValid(id) ? new ObjectId(id) : null
         : new ObjectId()
+}
+
+async function tokensCollectionIndexes(): Promise<void> {
+    const tokens = getCollection<Token>(`tokens`)
+    const indexList = [...await tokens.indexes()]
+        .filter(o => !o.name?.includes(`token`))
+    await Promise.all(
+        indexList
+            .map(o => tokens.dropIndex(o.name!))
+    )
+    await Promise.all(
+        tokenIndexes
+            .map(o => tokens.createIndex(o.keys, o.options)) 
+    )
+}
+
+export async function mongoIndexes(): Promise<IndexDescriptionInfo[]> {
+    await tokensCollectionIndexes()
+    return getCollection<Token>(`tokens`).indexes()
 }

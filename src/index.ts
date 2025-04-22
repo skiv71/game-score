@@ -2,39 +2,17 @@ import express from "express"
 
 import router from "./router"
 
-import { getCollection } from "./db"
-
-import Token from "./db/models/token"
-
-import { TOKEN } from "./config"
+import { mongoIndexes } from "./db"
 
 async function init(): Promise<void> {
-    const tokens = getCollection<Token>(`tokens`)
-    const indexes = await tokens.indexes()
-    console.log(indexes)
-    const index = indexes
-        .find(o => o.name == TOKEN.INACTIVE_PURGE.NAME)
-    if (!index) {
-        console.log(`adding index`)
-        await tokens.createIndex(
-            {
-                _created: 1
-            },
-            {
-                expireAfterSeconds: TOKEN.INACTIVE_PURGE.TTL,
-                name: TOKEN.INACTIVE_PURGE.NAME
-            }
-        )
-  }
+    console.log(await mongoIndexes())
+    main()
 }
 
-function listen(): void {
-  const app = express()
-
-  app.use(express.json(), router)
-  
-  app.listen(80)
+function main(): void {
+    const app = express()
+    app.use(express.json(), router)
+    app.listen(80)
 }
 
-init().then(listen)
-
+init().then(main)

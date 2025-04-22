@@ -1,6 +1,7 @@
 import {
     IModel,
-    Model
+    Model,
+    ModelIndex
 } from "../model"
 
 interface IGame extends IModel {
@@ -19,3 +20,5 @@ export default class Game extends Model<IGame> {
     }
 
 }
+
+export const gameIndexes: ModelIndex<IGame>[] = []

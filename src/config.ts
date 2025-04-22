@@ -21,10 +21,3 @@ export const ADMIN = {
 export const MESSAGE = {
     SERVER_ERROR: `A server error has occurred!`
 }
-
-export const TOKEN = {
-    INACTIVE_PURGE: {
-        NAME: `inactive-token-purge`,
-        TTL: 900
-    }
-}
