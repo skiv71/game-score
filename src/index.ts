@@ -8,11 +8,9 @@ import { APP } from "./config"
 
 async function init(): Promise<void> {
     console.log(await mongoIndexes())
-    main()
 }
 
 function main(): void {
-    console.log(`start`)
     const app = express()
     app.use(express.json(), router)
     app.listen(APP.PORT)

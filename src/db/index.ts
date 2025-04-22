@@ -38,7 +38,8 @@ export function documentId(
 async function tokensCollectionIndexes(): Promise<void> {
     const tokens = getCollection<Token>(`tokens`)
     const indexList = [...await tokens.indexes()]
-        .filter(o => o.name?.includes(tokenNamePrefix))
+        .filter(o => !o.name?.includes(`_id`))
+        //.filter(o => o.name?.includes(tokenNamePrefix))
     await Promise.all(
         indexList
             .map(o => tokens.dropIndex(o.name!))
