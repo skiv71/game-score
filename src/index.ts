@@ -12,6 +12,7 @@ async function init(): Promise<void> {
 }
 
 function main(): void {
+    console.log(`start`)
     const app = express()
     app.use(express.json(), router)
     app.listen(APP.PORT)
