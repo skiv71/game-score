@@ -21,3 +21,7 @@ export const ADMIN = {
 export const MESSAGE = {
     SERVER_ERROR: `A server error has occurred!`
 }
+
+export const APP = {
+    PORT: process.env.APP_PORT || 80
+}

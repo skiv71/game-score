@@ -4,6 +4,8 @@ import router from "./router"
 
 import { mongoIndexes } from "./db"
 
+import { APP } from "./config"
+
 async function init(): Promise<void> {
     console.log(await mongoIndexes())
     main()
@@ -12,7 +14,7 @@ async function init(): Promise<void> {
 function main(): void {
     const app = express()
     app.use(express.json(), router)
-    app.listen(80)
+    app.listen(APP.PORT)
 }
 
 init().then(main)
