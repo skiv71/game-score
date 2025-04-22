@@ -11,7 +11,8 @@ import { MONGO } from "../config"
 import { Model } from "./model"
 
 import Token, {
-    tokenIndexes
+    tokenIndexes,
+    tokenNamePrefix
 } from "./models/token"
 
 export const collections = [`games`, `tokens`, `users`] as const
@@ -37,7 +38,7 @@ export function documentId(
 async function tokensCollectionIndexes(): Promise<void> {
     const tokens = getCollection<Token>(`tokens`)
     const indexList = [...await tokens.indexes()]
-        .filter(o => !o.name?.includes(`token`))
+        .filter(o => o.name?.includes(tokenNamePrefix))
     await Promise.all(
         indexList
             .map(o => tokens.dropIndex(o.name!))

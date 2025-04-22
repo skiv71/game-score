@@ -41,13 +41,15 @@ export default class Token extends Model<IToken> {
 
 }
 
+export const tokenNamePrefix = `Token`
+
 const tokenPurge: ModelIndex<IToken> = {
     keys: {
         _created: 1
     },
     options: {
         expireAfterSeconds: 900,
-        name: `token_inactive-purge`,
+        name: `${tokenNamePrefix}:inactive-purge`,
         partialFilterExpression: {
             active: false
         }
