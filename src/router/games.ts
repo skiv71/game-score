@@ -1,47 +1,46 @@
 import {
+    NextFunction,
     Request,
-    Response
+    Response,
 } from "express"
 
-import { getCollection } from "../db"
+import {
+    ConflictError,
+    InvalidError
+} from './error'
 
 import Game from "../db/models/game"
 
-import { MESSAGE } from "../config"
-
-export const games = getCollection<Game>(`games`)
-
 export async function createGame(
     req: Request,
-    res: Response
+    res: Response,
+    next: NextFunction
 ): Promise<void> {
     try {
+        const games = Game.collection()
         const name: string = req.body.name || ``
-        if (!name) {
-            res.status(400).send(`Invalid game name!`)
-            return
-        }
-        if (await games.findOne({ name })) {
-            res.status(409).send(`Game already exists!`)
-            return
-        }
-        const game = new Game({ name })
+        if (!name)
+            throw new InvalidError(`Invalid game name!`)
+        if (await games.findOne({ name }))
+            throw new ConflictError(`Duplicate game name!`)
+        const game = new Game.Document({ name })
         await games.insertOne(game)
         res.send(game)
     } catch(e) {
-        console.error(e)
-        res.status(500).send(MESSAGE.SERVER_ERROR)
+        next(e)
     }
 }
 
 export async function getGames(
     req: Request,
-    res: Response
+    res: Response,
+    next: NextFunction
 ): Promise<void> {
     try {
-        res.send(await games.find().toArray())
+        res.send(
+            await Game.collection().find().toArray()
+        )
     } catch(e) {
-        console.error(e)
-        res.status(500).send(MESSAGE.SERVER_ERROR)
+        next(e)
     }
 }

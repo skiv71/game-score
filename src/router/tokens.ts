@@ -1,12 +1,10 @@
 import {
+    NextFunction,
     Request,
     Response
 } from "express"
 
-import {
-    documentId,
-    getCollection
-} from "../db"
+import { documentId } from "../db/utils"
 
 import Game from "../db/models/game"
 
@@ -20,29 +18,27 @@ import validator from 'validator'
 
 import {
     ADMIN,
-    MESSAGE
 } from "../config"
 
-import { users } from "./users"
-
-import { games } from "./games"
-
-export const tokens = getCollection<Token>(`tokens`)
+import {
+    ConflictError,
+    ForbiddenError,
+    InvalidError,
+    NotFoundError
+} from "./error"
 
 async function createUser(
     email: string
-): Promise<User> {
-    const user = new User({ email })
-    await users.insertOne(user)
+): Promise<User.Document> {
+    const user = new User.Document({ email })
+    await User.collection().insertOne(user)
     return user
 }
 
-const getUser = (email: string): Promise<User | null> => users.findOne({ email })
-
 async function activateTokenEmail(
-    game: Game,
-    user: User,
-    token: Token
+    game: Game.Document,
+    user: User.Document,
+    token: Token.Document
 ): Promise<void> {
     const mail = new Mail(
         Mail.contact(ADMIN.NAME, ADMIN.EMAIL),
@@ -59,9 +55,9 @@ async function activateTokenEmail(
 }
 
 async function createTokenEmail(
-    game: Game,
-    user: User,
-    token: Token
+    game: Game.Document,
+    user: User.Document,
+    token: Token.Document
 ): Promise<void> {
     const mail = new Mail(
         Mail.contact(ADMIN.NAME, ADMIN.EMAIL),
@@ -80,101 +76,116 @@ async function createTokenEmail(
 
 export async function activateToken(
     req: Request,
-    res: Response
+    res: Response,
+    next: NextFunction
 ): Promise<void> {
     try {
+        const tokens = Token.collection()
         const tokenId = documentId(req.params.id)
-        if (!tokenId) {
-            res.status(400).send(`Invalid tokenId!`)
-            return
-        }
+        if (!tokenId)
+            throw new InvalidError(`Invalid tokenId!`)
         const token = await tokens.findOne({ _id: tokenId })
-        if (!token) {
-            res.status(400).send(`Invalid tokenId`)
-            return
-        }
-        if (token.active) {
-            res.status(403).send(`Token already active!`)
-            return
-        }
-        const game = await games.findOne({ _id: token.gameId })
+        if (!token)
+            throw new NotFoundError(`Unknown tokenId!`)
+        if (token.active)
+            throw new ConflictError(`Token already acivated!`)
+        const game = await Game.collection().findOne({ _id: token.gameId })
         if (!game)
-            throw new Error(`Failed to find game with id: ${token.gameId}!`)
-        const user = await users.findOne({ _id: token.userId })
+            throw new NotFoundError(`No game with gameId: ${token.gameId}!`)
+        const user = await User.collection().findOne({ _id: token.userId })
         if (!user)
-            throw new Error(`Failed to find user with id: ${token.userId}!`)
-        token.active = true
-        await tokens.updateOne({ _id: tokenId }, { $set: new Token(token) })
+            throw new NotFoundError(`No user with userId: ${token.userId}!`)
+        await tokens.updateOne({ _id: tokenId }, { $set: token.update({ active: true }) })
         await activateTokenEmail(game, user, token)
         res.send(`OK`)
     } catch(e) {
-        console.error(e)
-        res.status(500).send(MESSAGE.SERVER_ERROR)
+        next(e)
     }
 }
 
 export async function createToken(
     req: Request,
-    res: Response
+    res: Response,
+    next: NextFunction
 ): Promise<void> {
     try {
+        const tokens = Token.collection()
         const { email, gameURL } = req.body
-        if (!validator.isEmail(email)) {
-            res.status(400).send(`Invalid email address!`)
-            return
-        }
-        const user = await getUser(email) || await createUser(email)
+        if (!validator.isEmail(email))
+            throw new InvalidError(`Invalid email address!`)
+        const user =  await User.collection().findOne({ email })
+            || await createUser(email)
         const { _id: userId } = user
         const gameId = documentId(req.body.gameId)
-        if (!gameId) {
-            res.status(400).send(`Invalid gameId!`)
-            return
-        }
-        const game = await games.findOne({ _id: gameId })
-        if (!game) {
-            res.status(400).send(`Invalid gameId!`)
-            return
-        }
-        if (await tokens.findOne({ gameId, userId, active: false })) {
-            res.status(409).send(`Pending token awating activation!`)
-            return
-        }
+        if (!gameId)
+            throw new InvalidError(`Invalid gameId!`)
+        const game = await Game.collection().findOne({ _id: gameId })
+        if (!game)
+            throw new NotFoundError(`Unknown gameId!`)
+        if (await tokens.findOne({ gameId, userId, active: false }))
+            throw new ConflictError(`Pending token awaiting activation!`)
         await tokens.deleteMany({ gameId, userId })
-        const token = new Token({ gameId, gameURL, userId })
+        const token = new Token.Document({ gameId, gameURL, userId })
         await tokens.insertOne(token)
         await createTokenEmail(game, user, token)
         res.send(token)
     } catch(e) {
-        console.error(e)
-        res.status(500).send(MESSAGE.SERVER_ERROR)
+        next(e)
     }
 }
 
 export async function getTokens(
     req: Request,
-    res: Response
+    res: Response,
+    next: NextFunction
 ): Promise<void> {
     try {
-        res.send(await tokens.find().toArray())
+        res.send(
+            await Token.collection().find().toArray()
+        )
     } catch(e) {
-        console.error(e)
-        res.status(500).send(MESSAGE.SERVER_ERROR)
+        next(e)
     }
 }
 
 export async function deleteToken(
     req: Request,
-    res: Response
+    res: Response,
+    next: NextFunction
 ): Promise<void> {
     try {
         const _id = documentId(req.params.id)
-        if (!_id) {
-            res.status(400).send(`Invalid token id!`)
-            return
-        }
-        res.send(await tokens.deleteOne({ _id }))
+        if (!_id)
+            throw new InvalidError(`Invalid token id!`)
+        res.send(
+            await Token.collection().deleteOne({ _id })
+        )
     } catch(e) {
-        console.error(e)
-        res.status(500).send(MESSAGE.SERVER_ERROR)
+        next(e)
     }
+}
+
+export async function updateToken(
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<void> {
+    try {
+        const tokens = Token.collection()
+        const tokenId = documentId(req.params.id)
+        if (!tokenId)
+            throw new InvalidError(`Invalid token id!`)
+        const token = await tokens.findOne({ _id: tokenId })
+        if (!token)
+            throw new NotFoundError(`Unknown token id!`)
+        if (!token.active)
+            throw new ForbiddenError(`Inactive token!`)
+        const gameURL = req.body.gameURL || ``
+        res.send(
+            await tokens.updateOne({ _id: tokenId }, { $set: token.update({ gameURL }) })
+        )
+    } catch(e) {
+        next(e)
+    }
+    
 }

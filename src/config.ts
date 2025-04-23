@@ -10,18 +10,14 @@ export const MAIL = {
     HOST: process.env.MAIL_HOST || `https://api.mailjet.com/v3.1/send`,
     API_KEY: process.env.MAIL_API_KEY || ``,
     SECRET: process.env.MAIL_SECRET || ``
-}
+} as const
 
 export const ADMIN = {
     NAME: `admin`,
     EMAIL: `skivy71@gmail.com`,
     HOST: `https://default-game-score.1guv9s.easypanel.host/`
-}
-
-export const MESSAGE = {
-    SERVER_ERROR: `A server error has occurred!`
-}
+} as const
 
 export const APP = {
     PORT: process.env.APP_PORT || 80
-}
+} as const

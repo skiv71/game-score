@@ -1,24 +1,21 @@
 import {
+    NextFunction,
     Request,
     Response
 } from "express"
 
-import { getCollection } from "../db"
-
 import User from "../db/models/user"
-
-import { MESSAGE } from "../config"
-
-export const users = getCollection<User>(`users`)
 
 export async function getUsers(
     req: Request,
-    res: Response
+    res: Response,
+    next: NextFunction
 ): Promise<void> {
     try {
-        res.send(await users.find().toArray())
+        res.send(
+            await User.collection().find().toArray()
+        )
     } catch(e) {
-        console.error(e)
-        res.status(500).send(MESSAGE.SERVER_ERROR)
+        next(e)
     }
 }

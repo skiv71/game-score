@@ -1,24 +1,33 @@
 import {
-    IModel,
-    Model,
-    ModelIndex
-} from "../model"
+    Collection,
+    ObjectId
+} from "mongodb"
 
-interface IUser extends IModel {
-    email: string
-}
+import Model from "../model"
 
-export default class User extends Model<IUser> {
+import { getCollection } from "../collection"
 
-    public email: string
+namespace User {
 
-    constructor(
-        user: IUser
-    ) {
-        super(user)
-        this.email = user.email
+    export interface Schema extends Partial<Model.Schema> {
+        email: string
+    }
+
+    export const collection = (): Collection<Document> => getCollection<Document>(`users`)
+
+    export class Document extends Model.Document<Schema> implements Schema {
+
+        readonly email: string
+
+        constructor(
+            user: Schema
+        ) {
+            super(user)
+            this.email = user.email
+        }
+        
     }
 
 }
 
-export const userIndexes: ModelIndex<IUser>[] = []
+export default User

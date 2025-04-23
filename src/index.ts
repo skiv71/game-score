@@ -1,19 +1,6 @@
-import express from "express"
+import app from "./app"
 
-import router from "./router"
+import db from "./db"
 
-import { mongoIndexes } from "./db"
-
-import { APP } from "./config"
-
-async function init(): Promise<void> {
-    console.log(await mongoIndexes())
-}
-
-function main(): void {
-    const app = express()
-    app.use(express.json(), router)
-    app.listen(APP.PORT)
-}
-
-init().then(main)
+db.init()
+    .then(() => app.start())

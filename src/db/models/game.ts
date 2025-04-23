@@ -1,24 +1,30 @@
-import {
-    IModel,
-    Model,
-    ModelIndex
-} from "../model"
+import { Collection } from "mongodb"
 
-interface IGame extends IModel {
-    name: string
-}
+import Model from "../model"
 
-export default class Game extends Model<IGame> {
+import { getCollection } from "../collection"
 
-    public name: string
+namespace Game {
 
-    constructor(
-        game: IGame
-    ) {
-        super(game)
-        this.name = game.name
+    export interface Schema extends Partial<Model.Schema> {
+        name: string
+    }
+
+    export const collection = (): Collection<Document> => getCollection<Document>(`games`)
+
+    export class Document extends Model.Document<Schema> implements Schema {
+
+        readonly name: string
+
+        constructor(
+            game: Schema
+        ) {
+            super(game)
+            this.name = game.name
+        }
+        
     }
 
 }
 
-export const gameIndexes: ModelIndex<IGame>[] = []
+export default Game
