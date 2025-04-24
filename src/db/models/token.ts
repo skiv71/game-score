@@ -72,9 +72,9 @@ export async function tokenIndexes(): Promise<IndexDescriptionInfo[]> {
         indexList
             .map(o => tokens.dropIndex(o.name!))
     )
-    await Promise.all(
-        Token.indexes
-            .map(o => tokens.createIndex(o.keys, o.options))
-    )
+    // await Promise.all(
+    //     Token.indexes
+    //         .map(o => tokens.createIndex(o.keys, o.options))
+    // )
     return tokens.indexes()
 }
