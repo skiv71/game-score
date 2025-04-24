@@ -100,6 +100,7 @@ export async function activateToken(
         await tokenActivatedEmail(game, user, token)
         res.send(`OK`)
     } catch(e) {
+        console.error(e)
         next(e)
     }
 }
