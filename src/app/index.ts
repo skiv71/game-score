@@ -2,7 +2,7 @@ import express from 'express'
 
 import router from './router'
 
-import { APP } from "./config"
+import { APP } from "../config"
 
 export default {
     start(): void {

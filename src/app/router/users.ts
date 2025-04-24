@@ -4,7 +4,7 @@ import {
     Response
 } from "express"
 
-import User from "../db/models/user"
+import User from "../../db/models/user"
 
 export async function getUsers(
     req: Request,

@@ -4,21 +4,21 @@ import {
     Response
 } from "express"
 
-import { documentId } from "../db/utils"
+import { documentId } from "../../db/utils"
 
-import Game from "../db/models/game"
+import Game from "../../db/models/game"
 
-import Token from "../db/models/token"
+import Token from "../../db/models/token"
 
-import User from "../db/models/user"
+import User from "../../db/models/user"
 
-import Mail from "../mail"
+import Mail from "../../mail"
 
 import validator from 'validator'
 
 import {
     ADMIN,
-} from "../config"
+} from "../../config"
 
 import {
     ConflictError,

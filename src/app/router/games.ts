@@ -9,7 +9,7 @@ import {
     InvalidError
 } from './error'
 
-import Game from "../db/models/game"
+import Game from "../../db/models/game"
 
 export async function createGame(
     req: Request,
