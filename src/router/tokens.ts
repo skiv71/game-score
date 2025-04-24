@@ -35,7 +35,7 @@ async function createUser(
     return user
 }
 
-async function activateTokenEmail(
+async function tokenActivatedEmail(
     game: Game.Document,
     user: User.Document,
     token: Token.Document
@@ -54,7 +54,7 @@ async function activateTokenEmail(
     await mail.send()
 }
 
-async function createTokenEmail(
+async function tokenCreatedEmail(
     game: Game.Document,
     user: User.Document,
     token: Token.Document
@@ -95,8 +95,9 @@ export async function activateToken(
         const user = await User.collection().findOne({ _id: token.userId })
         if (!user)
             throw new NotFoundError(`No user with userId: ${token.userId}!`)
-        await tokens.updateOne({ _id: tokenId }, { $set: token.update({ active: true }) })
-        await activateTokenEmail(game, user, token)
+        const update = new Token.Document(token).update({ active: true })
+        await tokens.updateOne({ _id: tokenId }, { $set: update })
+        await tokenActivatedEmail(game, user, token)
         res.send(`OK`)
     } catch(e) {
         next(e)
@@ -127,7 +128,7 @@ export async function createToken(
         await tokens.deleteMany({ gameId, userId })
         const token = new Token.Document({ gameId, gameURL, userId })
         await tokens.insertOne(token)
-        await createTokenEmail(game, user, token)
+        await tokenCreatedEmail(game, user, token)
         res.send(token)
     } catch(e) {
         next(e)

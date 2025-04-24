@@ -22,7 +22,7 @@ namespace Game {
             super(game)
             this.name = game.name
         }
-        
+
     }
 
 }
