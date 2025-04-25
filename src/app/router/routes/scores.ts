@@ -20,10 +20,10 @@ async function getToken(
 ): Promise<Token> {
     const { token: tokenData } = req.headers
     if (typeof tokenData !=  `string` || tokenData.length != Token.data().length)
-        throw new CustomError(ErrorType.Unauthorized, `Invalid token data!`)
+        throw new CustomError(ErrorType.Unauthorized)
     const token = await Token.collection().findOne({ data: tokenData })
     if (!token)
-        throw new CustomError(ErrorType.Unauthorized, `Invalid token data!`)
+        throw new CustomError(ErrorType.Unauthorized)
     return token
 }
 
