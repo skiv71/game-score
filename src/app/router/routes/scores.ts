@@ -49,7 +49,7 @@ export async function submitScore(
 ): Promise<void> {
     try {
         const {
-            score: value = 0,
+            score: value,
             name = ``
         } = req.body
         const token = await getToken(req)
@@ -60,7 +60,7 @@ export async function submitScore(
             throw new CustomError(ErrorType.InvalidRequest, `Invalid score value!`)
         if (!name)
             throw new CustomError(ErrorType.InvalidRequest, `Invalid name value!`)
-        const score = new Score({ name, gameId, value, userId })
+        const score = new Score({ name, gameId, value: +value, userId })
         const scores = Score.collection()
         const currentScores = Array.from(
             await scores.find({ gameId, userId }).toArray()
