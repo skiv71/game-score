@@ -81,6 +81,24 @@ export async function submitScore(
     }
 }
 
+export async function deleteScore(
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<void> {
+    try {
+        await getToken(req)
+        const _id = Document.id(req.params.id)
+        if (!_id)
+            throw new CustomError(ErrorType.InvalidRequest, `Invalid token id!`)
+        res.send(
+            await Score.collection().deleteOne({ _id })
+        )
+    } catch(e) {
+        next(e)
+    }
+}
+
 export async function deleteScores(
     req: Request,
     res: Response,
@@ -88,16 +106,9 @@ export async function deleteScores(
 ): Promise<void> {
     try {
         const { gameId, userId } = await getToken(req)
-        let result
-        if (req.params.id) {
-            const _id = Document.id(req.params.id)
-            if (!_id)
-                throw new CustomError(ErrorType.InvalidRequest, `Invalid token id!`)
-            result = await Score.collection().deleteOne({ _id })
-        } else {
-            result = await Score.collection().deleteMany({ gameId, userId })
-        }
-        res.send(result)
+        res.send(
+            await Score.collection().deleteMany({ gameId, userId })
+        )
     } catch(e) {
         next(e)
     }
