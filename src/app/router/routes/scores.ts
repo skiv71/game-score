@@ -67,7 +67,7 @@ export async function submitScore(
         const currentScores = Array.from(
             await scores.find({ gameId, userId }).toArray()
         ).sort((a, b) => b.value - a.value)
-        if (currentScores.length > +SCORES.LIMIT) {
+        if (currentScores.length >= +SCORES.LIMIT) {
             const [lowest] = currentScores
             if (score.value < lowest.value)
                 throw new CustomError(ErrorType.Conflict, `Score limit reached, score is below current lowest!`)
