@@ -14,6 +14,8 @@ import {
     notFoundError
 } from "../error"
 
+import { SCORES } from "@/config"
+
 export async function getScores(
     req: Request,
     res: Response,
@@ -52,8 +54,18 @@ export async function submitScore(
         if (!name)
             throw invalidError(`Invalid name!`)
         const score = new Score({ name, gameId, value, userId })
+        const scores = Score.collection()
+        const currentScores = Array.from(
+            await scores.find({ gameId, userId }).toArray()
+        ).sort((a, b) => b.value - a.value)
+        if (currentScores.length > +SCORES.LIMIT) {
+            const [lowest] = currentScores
+            if (score.value < lowest.value)
+                throw conflictError(`Scores limited reached and score is below current lowest!`)
+            await scores.deleteOne({ _id: lowest._id })
+        } 
         res.send(
-            await Score.collection().insertOne(score)
+            await scores.insertOne(score)
         )
     } catch(e) {
         next(e)

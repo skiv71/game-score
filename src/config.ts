@@ -22,3 +22,7 @@ export const ADMIN = {
 export const APP = {
     PORT: process.env.APP_PORT || 80
 } as const
+
+export const SCORES = {
+    LIMIT: process.env.SCORES_LIMIT || 10
+}
