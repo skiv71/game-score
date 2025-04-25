@@ -27,6 +27,7 @@ router
     .post(`/games`, createGame)
 
     .get(`/scores`, getScores)
+    .post(`/scores`, submitScore)
 
     .get(`/tokens`, getTokens)
     .get(`/tokens/:id`, activateToken)
