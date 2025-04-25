@@ -30,14 +30,14 @@ router
 
     .get(`/scores`, getScores)
     .post(`/scores`, submitScore)
-    .delete(`/scores/:id`, deleteScore)
-    .delete(`/scores`, deleteScores)
+    // .delete(`/scores/:id`, deleteScore)
+    // .delete(`/scores`, deleteScores)
 
     .get(`/tokens`, getTokens)
     .get(`/tokens/:id`, activateToken)
     .put(`/tokens/:id`, updateToken)
-    .post(`/tokens`, createToken)
-    .delete(`/tokens/:id`, deleteToken)
+    // .post(`/tokens`, createToken)
+    // .delete(`/tokens/:id`, deleteToken)
 
     .get(`/users`, getUsers)
 
