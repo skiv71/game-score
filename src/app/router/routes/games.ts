@@ -5,9 +5,9 @@ import type {
 } from "express"
 
 import {
-    conflictError,
-    invalidError
-} from '../error'
+    CustomError,
+    ErrorType
+} from "../error"
 
 import Game from "@documents/game"
 
@@ -20,9 +20,9 @@ export async function createGame(
         const games = Game.collection()
         const name: string = req.body.name || ``
         if (!name)
-            throw invalidError(`Invalid game name!`)
+            throw new CustomError(ErrorType.InvalidRequest, `Invalid game name!`)
         if (await games.findOne({ name }))
-            throw conflictError(`Duplicate game name!`)
+            throw new CustomError(ErrorType.Conflict, `Duplicate game name!`)
         const game = new Game({ name })
         res.send(
             await games.insertOne(game)

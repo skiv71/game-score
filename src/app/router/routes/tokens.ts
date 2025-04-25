@@ -17,10 +17,8 @@ import validator from 'validator'
 import { ADMIN } from "@config"
 
 import {
-    conflictError,
-    forbiddenError,
-    invalidError,
-    notFoundError
+    CustomError,
+    ErrorType
 } from "../error"
 
 import Document from "../../../db/document"
@@ -81,18 +79,18 @@ export async function activateToken(
         const tokens = Token.collection()
         const tokenId = Document.id(req.params.id)
         if (!tokenId)
-            throw invalidError(`Invalid tokenId!`)
+            throw new CustomError(ErrorType.InvalidRequest, `Invalid tokenId!`)
         const token = await tokens.findOne({ _id: tokenId })
         if (!token)
-            throw notFoundError(`Unknown tokenId!`)
+            throw new CustomError(ErrorType.NotFound, `Unknown tokenId!`)
         if (token.active)
-            throw conflictError(`Token active!`)
+            throw new CustomError(ErrorType.Conflict, `Token already active!`)
         const game = await Game.collection().findOne({ _id: token.gameId })
         if (!game)
-            throw notFoundError(`No game with gameId: ${token.gameId}!`)
+            throw new CustomError(ErrorType.NotFound, `No game with gameId: ${token.gameId}!`)
         const user = await User.collection().findOne({ _id: token.userId })
         if (!user)
-            throw notFoundError(`No game with userId: ${token.userId}!`)
+            throw new CustomError(ErrorType.NotFound, `No user with userId: ${token.userId}!`)
         const update = Document.update<Token>({ active: true })
         const r = await tokens.updateOne({ _id: tokenId }, { $set: update })
         await tokenActivatedEmail(game, user, token)
@@ -112,18 +110,18 @@ export async function createToken(
         const tokens = Token.collection()
         const { email, gameURL } = req.body
         if (!validator.isEmail(email))
-            throw invalidError(`Invalid email address!`)
+            throw new CustomError(ErrorType.InvalidRequest, `Invali email address!`)
         const user =  await User.collection().findOne({ email })
             || await createUser(email)
         const { _id: userId } = user
         const gameId = Document.id(req.body.gameId)
         if (!gameId)
-            throw invalidError(`Invalid gameId!`)
+            throw new CustomError(ErrorType.InvalidRequest, `Invalid gameId!`)
         const game = await Game.collection().findOne({ _id: gameId })
         if (!game)
-            throw notFoundError(`Unknown gameId!`)
+            throw new CustomError(ErrorType.NotFound, `Unknown gameId!`)
         if (await tokens.findOne({ gameId, userId, active: false }))
-            throw conflictError(`Pending token awaiting activation!`)
+            throw new CustomError(ErrorType.Conflict, `Token pending activation!`)
         await tokens.deleteMany({ gameId, userId })
         const token = new Token({ gameId, gameURL, userId })
         const r = await tokens.insertOne(token)
@@ -156,7 +154,7 @@ export async function deleteToken(
     try {
         const _id = Document.id(req.params.id)
         if (!_id)
-            throw invalidError(`Invalid token id!`)
+            throw new CustomError(ErrorType.InvalidRequest, `Invalid token id!`)
         res.send(
             await Token.collection().deleteOne({ _id })
         )
@@ -174,12 +172,12 @@ export async function updateToken(
         const tokens = Token.collection()
         const tokenId = Document.id(req.params.id)
         if (!tokenId)
-            throw invalidError(`Invalid token id!`)
+            throw new CustomError(ErrorType.InvalidRequest, `Invalid token id!`)
         const token = await tokens.findOne({ _id: tokenId })
         if (!token)
-            throw notFoundError(`Unknown token id!`)
+            throw new CustomError(ErrorType.NotFound, `Unknown token id!`)
         if (!token.active)
-            throw forbiddenError(`Inactive token!`)
+            throw new CustomError(ErrorType.Forbidden, `Token is not activated!`)
         const gameURL = req.body.gameURL || ``
         const update = Document.update<Token>({ gameURL })
         res.send(

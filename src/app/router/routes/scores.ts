@@ -9,9 +9,8 @@ import Score from "@documents/score"
 import Token from "@documents/token"
 
 import {
-    conflictError,
-    invalidError,
-    notFoundError
+    CustomError,
+    ErrorType
 } from "../error"
 
 import { SCORES } from "@/config"
@@ -42,17 +41,17 @@ export async function submitScore(
             name = ``
         } = req.body
         if (typeof tokenData !=  `string` || tokenData.length != Token.data().length)
-            throw invalidError(`Invalid token string!`)
+            throw new CustomError(ErrorType.InvalidRequest, `Invalid token string!`)
         const token = await Token.collection().findOne({ data: tokenData })
         if (!token)
-            throw notFoundError(`Invalid token string!`)
+            throw new CustomError(ErrorType.NotFound, `Invalid token string!`)
         const { gameId, userId } = token
         if (!token.active)
-            throw conflictError(`Token is not activated!`)
+            throw new CustomError(ErrorType.Conflict, `Token is not activated!`)
         if (typeof parseInt(value) != `number` || !value)
-            throw invalidError(`Invalid score!`)
+            throw new CustomError(ErrorType.InvalidRequest, `Invalid score value!`)
         if (!name)
-            throw invalidError(`Invalid name!`)
+            throw new CustomError(ErrorType.InvalidRequest, `Invalid name value!`)
         const score = new Score({ name, gameId, value, userId })
         const scores = Score.collection()
         const currentScores = Array.from(
@@ -61,7 +60,7 @@ export async function submitScore(
         if (currentScores.length > +SCORES.LIMIT) {
             const [lowest] = currentScores
             if (score.value < lowest.value)
-                throw conflictError(`Scores limited reached and score is below current lowest!`)
+                throw new CustomError(ErrorType.Conflict, `Score limit reached, score is below current lowest!`)
             await scores.deleteOne({ _id: lowest._id })
         } 
         res.send(
