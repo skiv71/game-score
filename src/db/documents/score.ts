@@ -27,7 +27,7 @@ export default class Score extends Document.Class<ScoreSchema> implements ScoreS
         super(score)
         this.gameId = score.gameId
         this.name = score.name
-        this.value = score.value
+        this.value = +score.value
         this.userId = score.userId
     }
 

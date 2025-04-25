@@ -8,6 +8,8 @@ import Score from "@documents/score"
 
 import Token from "@documents/token"
 
+import Document from "@/db/document"
+
 import {
     CustomError,
     ErrorType
@@ -74,6 +76,28 @@ export async function submitScore(
         res.send(
             await scores.insertOne(score)
         )
+    } catch(e) {
+        next(e)
+    }
+}
+
+export async function deleteScores(
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<void> {
+    try {
+        const { gameId, userId } = await getToken(req)
+        let result
+        if (req.params.id) {
+            const _id = Document.id(req.params.id)
+            if (!_id)
+                throw new CustomError(ErrorType.InvalidRequest, `Invalid token id!`)
+            result = await Score.collection().deleteOne({ _id })
+        } else {
+            result = await Score.collection().deleteMany({ gameId, userId })
+        }
+        res.send(result)
     } catch(e) {
         next(e)
     }

@@ -6,6 +6,7 @@ import {
 } from './routes/games'
 
 import {
+    deleteScores,
     getScores,
     submitScore
 } from './routes/scores'
@@ -28,6 +29,7 @@ router
 
     .get(`/scores`, getScores)
     .post(`/scores`, submitScore)
+    .delete(`/scores/:id?`, deleteScores)
 
     .get(`/tokens`, getTokens)
     .get(`/tokens/:id`, activateToken)
