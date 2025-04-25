@@ -12,7 +12,7 @@ export class CustomError extends Error {
 
     constructor(
         type: ErrorType,
-        message: string
+        message: string = ``
     ) {
         super(message)
         this.statusCode = type
