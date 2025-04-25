@@ -66,7 +66,7 @@ export async function submitScore(
         const scores = Score.collection()
         const currentScores = Array.from(
             await scores.find({ gameId, userId }).toArray()
-        ).sort((a, b) => b.value - a.value)
+        ).sort((a, b) => a.value - b.value)
         if (currentScores.length >= +SCORES.LIMIT) {
             const [lowest] = currentScores
             if (score.value < lowest.value)
