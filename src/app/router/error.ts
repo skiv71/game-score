@@ -1,59 +1,22 @@
-class BaseError extends Error {
-
-    constructor(
-        public statusCode: number,
-        public statusMessage: string
-    ) {
-        super()
+declare global {
+    interface Error {
+        code: number
     }
 }
 
-export class ConflictError extends BaseError {
-
-    constructor(
-        message = ``
-    ) {
-        super(409, message)
-    }
-
+function customError(
+    code: number,
+    message: string
+): Error {
+    const e = new Error(message)
+    e.code = code
+    return e
 }
 
-export class ForbiddenError extends BaseError {
+export const conflictError = (message: string): Error => customError(409, message)
 
-    constructor(
-        message = ``
-    ) {
-        super(403, message)
-    }
+export const forbiddenError = (message: string): Error => customError(403, message)
 
-}
+export const invalidError = (message: string): Error => customError(400, message)
 
-export class InvalidError extends BaseError {
-
-    constructor(
-        message = ``
-    ) {
-        super(400, message)
-    }
-
-}
-
-export class NotFoundError extends BaseError {
-
-    constructor(
-        message = ``
-    ) {
-        super(404, message)
-    }
-
-}
-
-export class UnauthorizedError extends BaseError {
-
-    constructor(
-        message = ``
-    ) {
-        super(401, message)
-    }
-
-}
+export const notFoundError = (message: string): Error => customError(404, message)

@@ -1,15 +1,15 @@
-import {
+import type {
     NextFunction,
     Request,
     Response,
 } from "express"
 
 import {
-    ConflictError,
-    InvalidError
-} from './error'
+    conflictError,
+    invalidError
+} from '../error'
 
-import Game from "../../db/models/game"
+import Game from "@documents/game"
 
 export async function createGame(
     req: Request,
@@ -20,12 +20,13 @@ export async function createGame(
         const games = Game.collection()
         const name: string = req.body.name || ``
         if (!name)
-            throw new InvalidError(`Invalid game name!`)
+            throw invalidError(`Invalid game name!`)
         if (await games.findOne({ name }))
-            throw new ConflictError(`Duplicate game name!`)
-        const game = new Game.Document({ name })
-        await games.insertOne(game)
-        res.send(game)
+            throw conflictError(`Duplicate game name!`)
+        const game = new Game({ name })
+        res.send(
+            await games.insertOne(game)
+        )
     } catch(e) {
         next(e)
     }

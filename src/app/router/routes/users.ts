@@ -1,10 +1,10 @@
-import {
+import type {
     NextFunction,
     Request,
     Response
 } from "express"
 
-import User from "../../db/models/user"
+import User from "@documents/user"
 
 export async function getUsers(
     req: Request,

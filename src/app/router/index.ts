@@ -3,7 +3,12 @@ import express from 'express'
 import {
     createGame,
     getGames
-} from './games'
+} from './routes/games'
+
+import {
+    getScores,
+    submitScore
+} from './routes/scores'
 
 import {
     activateToken,
@@ -11,15 +16,17 @@ import {
     deleteToken,
     getTokens,
     updateToken
-} from './tokens'
+} from './routes/tokens'
 
-import { getUsers } from './users'
+import { getUsers } from './routes/users'
 
 const router = express.Router()
 
 router
     .get(`/games`, getGames)
     .post(`/games`, createGame)
+
+    .get(`/scores`, getScores)
 
     .get(`/tokens`, getTokens)
     .get(`/tokens/:id`, activateToken)

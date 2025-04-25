@@ -1,4 +1,4 @@
-import { MAIL } from "../config"
+import { MAIL } from "@config"
 
 export type Contact = {
     name: string,
