@@ -15,14 +15,27 @@ import {
 
 import { SCORES } from "@/config"
 
+async function getToken(
+    req: Request
+): Promise<Token> {
+    const { token: tokenData } = req.headers
+    if (typeof tokenData !=  `string` || tokenData.length != Token.data().length)
+        throw new CustomError(ErrorType.InvalidRequest, `Invalid token data!`)
+    const token = await Token.collection().findOne({ data: tokenData })
+    if (!token)
+        throw new CustomError(ErrorType.Unauthorized, `Invalid token data!`)
+    return token
+}
+
 export async function getScores(
     req: Request,
     res: Response,
     next: NextFunction
 ): Promise<void> {
     try {
+        const { gameId, userId } = await getToken(req)
         res.send(
-            await Score.collection().find().toArray()
+            await Score.collection().find({ gameId, userId }).toArray()
         )
     } catch(e) {
         next(e)
@@ -36,15 +49,10 @@ export async function submitScore(
 ): Promise<void> {
     try {
         const {
-            token: tokenData = ``,
             score: value = 0,
             name = ``
         } = req.body
-        if (typeof tokenData !=  `string` || tokenData.length != Token.data().length)
-            throw new CustomError(ErrorType.InvalidRequest, `Invalid token string!`)
-        const token = await Token.collection().findOne({ data: tokenData })
-        if (!token)
-            throw new CustomError(ErrorType.NotFound, `Invalid token string!`)
+        const token = await getToken(req)
         const { gameId, userId } = token
         if (!token.active)
             throw new CustomError(ErrorType.Conflict, `Token is not activated!`)
