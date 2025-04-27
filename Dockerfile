@@ -13,7 +13,7 @@ RUN tar -zxvf *.gz
 RUN cd node* \
     && cp -R . /usr/local
 
-RUN echo $PATH
+RUN ls /usr/local/bin
 
 # WORKDIR /app
 
