@@ -36,7 +36,7 @@ router
     .get(`/tokens`, getTokens)
     .get(`/tokens/:id`, activateToken)
     .put(`/tokens/:id`, updateToken)
-    // .post(`/tokens`, createToken)
+    .post(`/tokens`, createToken)
     // .delete(`/tokens/:id`, deleteToken)
 
     .get(`/users`, getUsers)
