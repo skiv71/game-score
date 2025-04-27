@@ -11,7 +11,7 @@ import Mongo from "../mongo"
 import { randomBytes } from "crypto"
 
 type TokenSchema = {
-    active?: boolean
+    active: boolean
     data?: string
     gameId: ObjectId
     gameURL?: string
@@ -35,7 +35,7 @@ const indexes: Document.Index<TokenSchema>[] = [
 
 export default class Token extends Document.Class<TokenSchema> implements TokenSchema {
 
-    readonly active?: boolean | undefined
+    readonly active: boolean
     readonly data: string
     readonly gameId: ObjectId
     readonly gameURL?: string | undefined
