@@ -23,6 +23,8 @@ import {
 
 import Document from "../../../db/document"
 
+import { validRequestBody } from "../lib"
+
 async function createUser(
     email: string
 ): Promise<User> {
@@ -107,6 +109,7 @@ export async function createToken(
     next: NextFunction
 ): Promise<void> {
     try {
+        validRequestBody(req)
         const tokens = Token.collection()
         const { email, gameURL } = req.body
         if (!validator.isEmail(email))

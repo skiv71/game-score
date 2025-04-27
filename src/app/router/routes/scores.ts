@@ -15,6 +15,8 @@ import {
     ErrorType
 } from "../error"
 
+import { validRequestBody } from "../lib"
+
 import { SCORES } from "@/config"
 
 async function getToken(
@@ -50,6 +52,7 @@ export async function submitScore(
     next: NextFunction
 ): Promise<void> {
     try {
+        validRequestBody(req)
         const {
             score: value,
             name = ``

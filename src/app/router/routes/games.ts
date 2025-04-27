@@ -11,14 +11,17 @@ import {
 
 import Game from "@documents/game"
 
+import { validRequestBody } from "../lib"
+
 export async function createGame(
     req: Request,
     res: Response,
     next: NextFunction
 ): Promise<void> {
     try {
+        validRequestBody(req)
         const games = Game.collection()
-        const name: string = req.body.name || ``
+        const { name = `` } = req.body
         if (!name)
             throw new CustomError(ErrorType.InvalidRequest, `Invalid game name!`)
         if (await games.findOne({ name }))
