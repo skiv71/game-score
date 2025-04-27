@@ -15,6 +15,8 @@ RUN cd node* \
 
 RUN ls /usr/local/bin
 
+RUN node -v
+
 # WORKDIR /app
 
 # COPY . .
