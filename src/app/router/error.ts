@@ -27,15 +27,26 @@ export class CustomError extends Error {
 
 }
 
+const SERVER_ERROR = `A server error has occurred!`
+
 export function errorHandler(
-    err: CustomError,
+    err: any,
     req: Request,
     res: Response,
     next: NextFunction
 ): void {
     if (err) {
-        res.status(err.code).send(err.message)
-        console.error(err)
-        return
+        if (err instanceof CustomError) {
+            res.status(err.code).send(err.message)
+            console.error(err)
+        } else if (err instanceof Error) {
+            res.status(500).send(SERVER_ERROR)
+            console.error(err.stack)
+        } else {
+            res.status(500).send(SERVER_ERROR)
+            console.error(err)
+        }
+    } else {
+        next()
     }
 }
