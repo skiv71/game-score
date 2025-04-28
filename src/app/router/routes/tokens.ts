@@ -131,7 +131,7 @@ export async function createToken(
             throw new CustomError(ErrorType.NotFound, `Unknown gameId!`)
         const active = false
         if (await tokens.findOne({ gameId, userId, active }))
-            throw new CustomError(ErrorType.Conflict, `Token pending activation!`)
+            throw new CustomError(ErrorType.Conflict, `Token awaiting activation, please check your email!`)
         const token = new Token({ active, gameId, gameURL, userId })
         await tokens.insertOne(token)
         res.send(
