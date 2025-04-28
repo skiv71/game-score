@@ -65,9 +65,9 @@ async function tokenCreatedEmail(
     )
     const link = new URL(`/tokens/${token._id}/`, ADMIN.HOST)
     const html = [
-        `<p>Thank you for requesting your ${game.name} token.</p>`,
+        `<p>Thank you for requesting your ${game.name} game token.</p>`,
         `<p>Please click the <a href=${link.href}>link</a> to activate it.</p>`,
-        `<p>Note: This token will expire in 15 minutes.</p>`
+        `<p>Note: This token will expire in 30 minutes.</p>`
     ].join(``)
     mail.html = html
     await mail.send()
