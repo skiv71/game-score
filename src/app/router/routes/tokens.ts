@@ -41,7 +41,7 @@ async function tokenActivatedEmail(
     const mail = new Mail(
         Mail.contact(ADMIN.NAME, ADMIN.EMAIL),
         Mail.contact(user.email, user.email),
-        `${game.name} token`
+        `${game.name} game token`
     )
     const html = [
         `<p>Thank you for activating your ${game.name} game token.</p>`,
@@ -61,7 +61,7 @@ async function tokenCreatedEmail(
     const mail = new Mail(
         Mail.contact(ADMIN.NAME, ADMIN.EMAIL),
         Mail.contact(user.email, user.email),
-        `${game.name} token activation`
+        `${game.name} game token activation`
     )
     const link = new URL(`/tokens/${token._id}/`, ADMIN.HOST)
     const html = [
