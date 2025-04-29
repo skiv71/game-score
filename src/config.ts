@@ -15,8 +15,8 @@ export const MAIL = {
 
 export const ADMIN = {
     NAME: `admin`,
-    EMAIL: `skivy71@gmail.com`,
-    HOST: `https://default-game-score.1guv9s.easypanel.host/`
+    EMAIL: `admin@codingtutor.co.uk`,
+    HOST: `https://puffin.codingtutor.co.uk/`
 } as const
 
 export const APP = {
