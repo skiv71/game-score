@@ -67,7 +67,7 @@ export async function submitScore(
             throw new CustomError(ErrorType.InvalidRequest, `Invalid score value!`)
         if (!_name)
             throw new CustomError(ErrorType.InvalidRequest, `Invalid name value!`)
-        const name = new Filter().clean(_name)
+        const name = new Filter().clean(_name).trim()
         const score = new Score({ name, gameId, value: +value, userId })
         const scores = Score.collection()
         const currentScores = Array.from(
