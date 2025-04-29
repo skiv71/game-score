@@ -54,7 +54,7 @@ export async function submitScore(
     try {
         validRequestBody(req)
         const {
-            score: value,
+            value,
             name = ``
         } = req.body
         const token = await getToken(req)
