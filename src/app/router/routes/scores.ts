@@ -19,6 +19,8 @@ import { validRequestBody } from "../lib"
 
 import { SCORES } from "@/config"
 
+import { Filter } from "bad-words"
+
 async function getToken(
     req: Request
 ): Promise<Token> {
@@ -55,7 +57,7 @@ export async function submitScore(
         validRequestBody(req)
         const {
             value,
-            name = ``
+            name: _name = ``
         } = req.body
         const token = await getToken(req)
         const { gameId, userId } = token
@@ -63,8 +65,9 @@ export async function submitScore(
             throw new CustomError(ErrorType.Conflict, `Token is not activated!`)
         if (typeof parseInt(value) != `number` || !value)
             throw new CustomError(ErrorType.InvalidRequest, `Invalid score value!`)
-        if (!name)
+        if (!_name)
             throw new CustomError(ErrorType.InvalidRequest, `Invalid name value!`)
+        const name = new Filter().clean(_name)
         const score = new Score({ name, gameId, value: +value, userId })
         const scores = Score.collection()
         const currentScores = Array.from(
