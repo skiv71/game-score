@@ -59,6 +59,7 @@ export async function submitScore(
             value,
             name: _name = ``
         } = req.body
+        console.log(req.body)
         const token = await getToken(req)
         const { gameId, userId } = token
         if (!token.active)
