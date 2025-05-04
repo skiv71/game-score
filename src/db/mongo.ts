@@ -15,9 +15,26 @@ const options: MongoClientOptions = {
     }
 }
 
+const clients = new Set<MongoClient>()
+
 namespace Mongo {
 
-    export const db = (db: string = MONGO.DB_NAME): Db  => new MongoClient(url, options).db(db)
+    function createClient(): MongoClient {
+        console.log(`creating mongo client`)
+        const client = new MongoClient(url, options)
+        client.on(`error`, () => {
+            clients.delete(client)
+        })
+        clients.add(client)
+        return client
+    }
+
+    export function db(
+        db: string = MONGO.DB_NAME
+    ): Db  {
+        const [client] = clients.values()
+        return (client || createClient()).db(db)
+    }
 
 }
 
