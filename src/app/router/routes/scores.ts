@@ -27,11 +27,12 @@ async function getToken(
     req: Request
 ): Promise<Token> {
     const { token: tokenData } = req.headers
+    const errorMessage = `Invalid authorization token!`
     if (typeof tokenData !=  `string` || tokenData.length != Token.data().length)
-        throw new CustomError(ErrorType.Unauthorized)
+        throw new CustomError(ErrorType.Unauthorized, errorMessage)
     const token = await Token.collection().findOne({ data: tokenData })
     if (!token)
-        throw new CustomError(ErrorType.Unauthorized)
+        throw new CustomError(ErrorType.Unauthorized, errorMessage)
     return token
 }
 

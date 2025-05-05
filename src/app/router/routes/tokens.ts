@@ -26,8 +26,6 @@ import {
     validRequestBody
 } from "../lib"
 
-import Mongo from "@/db/mongo"
-
 async function createUser(
     email: string
 ): Promise<User> {

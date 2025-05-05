@@ -26,7 +26,7 @@ namespace Mongo {
             username: config.MONGO.DB_USER,
             password: config.MONGO.DB_PASS
         },
-        maxIdleTimeMS: +config.MONGO.IDLE_TIME * 1e3
+        maxIdleTimeMS: 10000
     } as const
 
     export function collection<T extends Document>(
@@ -43,11 +43,11 @@ namespace Mongo {
 
 }
 
-Mongo.client.on(`connectionCreated`, () => {
+Mongo.client.on(`connectionPoolCreated`, () => {
     console.log(`mongo:connection-create`)
 })
 
-Mongo.client.on(`connectionClosed`, () => {
+Mongo.client.on(`connectionPoolClosed`, () => {
     console.log(`mongo:connection-closed`)
 })
 
