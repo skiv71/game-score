@@ -18,7 +18,8 @@ export default {
         DB_HOST: process.env.DB_HOST || `localhost`,
         DB_PORT: process.env.DB_PORT || 27017,
         DB_NAME: process.env.DB_NAME || `default`,
-        DB_INIT: process.env.DB_INIT || 0
+        DB_INIT: process.env.DB_INIT || 0,
+        IDLE_TIME: process.env.IDLE_TIME || 60
     },
     SCORES: {
         LIMIT: process.env.SCORES_LIMIT || 10
