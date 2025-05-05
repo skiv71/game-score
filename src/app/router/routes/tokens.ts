@@ -21,10 +21,7 @@ import {
     ErrorType
 } from "../error"
 
-import {
-    getResult,
-    validRequestBody
-} from "../lib"
+import { validRequestBody } from "../lib"
 
 async function createUser(
     email: string
@@ -147,9 +144,8 @@ export async function getTokens(
     next: NextFunction
 ): Promise<void> {
     try {
-        const tokens = await Token.collection().find().toArray()
         res.send(
-            getResult<Token>(tokens)
+            await Token.collection().find().toArray()
         )
     } catch(e) {
         next(e)

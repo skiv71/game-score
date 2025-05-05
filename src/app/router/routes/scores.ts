@@ -9,10 +9,7 @@ import {
     ErrorType
 } from "../error"
 
-import {
-    getResult,
-    validRequestBody
-} from "../lib"
+import { validRequestBody } from "../lib"
 
 import { Filter } from "bad-words"
 
@@ -43,9 +40,8 @@ export async function getScores(
 ): Promise<void> {
     try {
         const { gameId, userId } = await getToken(req)
-        const scores = await Score.collection().find({ gameId, userId }).toArray() 
         res.send(
-            getResult<Score>(scores)
+            await Score.collection().find({ gameId, userId }).toArray()
         )
     } catch(e) {
         next(e)
