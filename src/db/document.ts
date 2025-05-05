@@ -1,7 +1,6 @@
-import {
-    type CreateIndexesOptions,
-    ObjectId
-} from "mongodb"
+import type { CreateIndexesOptions } from 'mongodb'
+
+import { ObjectId } from 'mongodb'
 
 namespace Document {
 
@@ -16,6 +15,10 @@ namespace Document {
     type IndexOptions<T> = CreateIndexesOptions & {
         partialFilterExpression?: Object<T>
     }
+
+    export type Update<T> = Partial<Omit<T, keyof Metadata>>
+
+    export type UpdateData<T> = Update<T> & Pick<Metadata, `_updated`>
 
     export type Metadata = {
         readonly _id: ObjectId
@@ -37,6 +40,14 @@ namespace Document {
             this._updated = o._updated || new Date()
         }
 
+        public static id(
+            id?: string
+        ): ObjectId | null {
+            return id
+                ? ObjectId.isValid(id) ? new ObjectId(id) : null
+                : new ObjectId()
+        }
+
     }
 
     export type Index<T> = {
@@ -44,20 +55,13 @@ namespace Document {
         options: IndexOptions<T>
     }
 
-    type Update<T> = Partial<Omit<T, keyof Metadata>>
-
     export function update<T>(
         update: Update<T>
-    ) {
-        return { ...update, _updated: new Date() }
-    }
-
-    export function id(
-        id?: string
-    ): ObjectId | null {
-        return id
-            ? ObjectId.isValid(id) ? new ObjectId(id) : null
-            : new ObjectId()
+    ): UpdateData<T> {
+        return {
+            ...update,
+            _updated: new Date()
+        }
     }
 
 }

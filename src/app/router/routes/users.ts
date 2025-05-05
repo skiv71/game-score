@@ -4,7 +4,9 @@ import type {
     Response
 } from "express"
 
-import User from "@documents/user"
+import { User } from "@/db/documents"
+
+import { getResult } from "../lib"
 
 export async function getUsers(
     req: Request,
@@ -12,8 +14,9 @@ export async function getUsers(
     next: NextFunction
 ): Promise<void> {
     try {
+        const users = await User.collection().find().toArray()
         res.send(
-            await User.collection().find().toArray()
+            getResult<User>(users)
         )
     } catch(e) {
         next(e)

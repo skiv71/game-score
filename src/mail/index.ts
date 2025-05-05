@@ -1,4 +1,4 @@
-import { MAIL } from "@config"
+import config from "@/config"
 
 export type Contact = {
     name: string,
@@ -44,8 +44,12 @@ export default class Mail {
     }
 
     private requestAuth(): string {
-        const base64 = Buffer.from([MAIL.API_KEY, MAIL.SECRET].join(`:`))
-            .toString(`base64`)
+        const base64 = Buffer.from(
+            [
+                config.MAIL.API_KEY,
+                config.MAIL.SECRET
+            ].join(`:`)
+        ).toString(`base64`)
         return `Basic ${base64}`
     }
     
@@ -72,6 +76,7 @@ export default class Mail {
             headers: this.requestHeaders(),
             body: this.requestBody()
         }
-        return fetch(MAIL.HOST, options)
+        return fetch(config.MAIL.HOST, options)
     }
+    
 }

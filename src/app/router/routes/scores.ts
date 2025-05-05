@@ -4,22 +4,24 @@ import type {
     Response
 } from "express"
 
-import Score from "@documents/score"
-
-import Token from "@documents/token"
-
-import Document from "@/db/document"
-
 import {
     CustomError,
     ErrorType
 } from "../error"
 
-import { validRequestBody } from "../lib"
-
-import { SCORES } from "@/config"
+import {
+    getResult,
+    validRequestBody
+} from "../lib"
 
 import { Filter } from "bad-words"
+
+import {
+    Score,
+    Token
+} from "@/db/documents"
+
+import config from "@/config"
 
 async function getToken(
     req: Request
@@ -40,8 +42,9 @@ export async function getScores(
 ): Promise<void> {
     try {
         const { gameId, userId } = await getToken(req)
+        const scores = await Score.collection().find({ gameId, userId }).toArray() 
         res.send(
-            await Score.collection().find({ gameId, userId }).toArray()
+            getResult<Score>(scores)
         )
     } catch(e) {
         next(e)
@@ -57,9 +60,9 @@ export async function submitScore(
         validRequestBody(req)
         const {
             value,
+            level,
             name: _name = ``
         } = req.body
-        console.log(req.body)
         const token = await getToken(req)
         const { gameId, userId } = token
         if (!token.active)
@@ -69,12 +72,12 @@ export async function submitScore(
         if (!_name)
             throw new CustomError(ErrorType.InvalidRequest, `Invalid name value!`)
         const name = new Filter().clean(_name).trim()
-        const score = new Score({ name, gameId, value: +value, userId })
+        const score = new Score({ name, gameId, value, userId, level })
         const scores = Score.collection()
         const currentScores = Array.from(
             await scores.find({ gameId, userId }).toArray()
         ).sort((a, b) => a.value - b.value)
-        if (currentScores.length >= +SCORES.LIMIT) {
+        if (currentScores.length >= +config.SCORES.LIMIT) {
             const [lowest] = currentScores
             if (score.value < lowest.value)
                 throw new CustomError(ErrorType.Conflict, `Score limit reached, score is below current lowest!`)
@@ -95,7 +98,7 @@ export async function deleteScore(
 ): Promise<void> {
     try {
         await getToken(req)
-        const _id = Document.id(req.params.id)
+        const _id = Score.id(req.params.id)
         if (!_id)
             throw new CustomError(ErrorType.InvalidRequest, `Invalid token id!`)
         res.send(

@@ -1,5 +1,3 @@
-import { type Collection } from "mongodb"
-
 import Document from "../document"
 
 import Mongo from "../mongo"
@@ -19,8 +17,14 @@ export default class User extends Document.Class<UserSchema> implements UserSche
         this.email = user.email
     }
 
-    static collection(): Collection<User> {
-        return Mongo.db().collection<User>(`users`)
+    public static collection(): Mongo.Collection<User> {
+        return Mongo.collection<User>(`users`)
+    }
+
+    public static update(
+        update: Document.Update<User>
+    ): Document.UpdateData<User> {
+        return Document.update<User>(update)
     }
 
 }

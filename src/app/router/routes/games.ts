@@ -9,9 +9,12 @@ import {
     ErrorType
 } from "../error"
 
-import Game from "@documents/game"
+import { Game } from "@/db/documents"
 
-import { validRequestBody } from "../lib"
+import {
+    getResult,
+    validRequestBody
+} from "../lib"
 
 export async function createGame(
     req: Request,
@@ -41,8 +44,9 @@ export async function getGames(
     next: NextFunction
 ): Promise<void> {
     try {
+        const games = await Game.collection().find().toArray()
         res.send(
-            await Game.collection().find().toArray()
+            getResult<Game>(games)
         )
     } catch(e) {
         next(e)

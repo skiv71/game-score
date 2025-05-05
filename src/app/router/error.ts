@@ -1,5 +1,4 @@
 import type {
-    Errback,
     NextFunction,
     Request,
     Response,

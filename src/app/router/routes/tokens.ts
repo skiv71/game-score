@@ -4,26 +4,29 @@ import type {
     Response
 } from "express"
 
-import Game from "@documents/game"
+import {
+    Game,
+    Token,
+    User
+} from "@/db/documents"
 
-import Token from "@documents/token"
-
-import User from "@documents/user"
-
-import Mail from "@mail"
+import Mail from "@/mail"
 
 import validator from 'validator'
 
-import { ADMIN } from "@config"
+import config from "@/config"
 
 import {
     CustomError,
     ErrorType
 } from "../error"
 
-import Document from "../../../db/document"
+import {
+    getResult,
+    validRequestBody
+} from "../lib"
 
-import { validRequestBody } from "../lib"
+import Mongo from "@/db/mongo"
 
 async function createUser(
     email: string
@@ -39,7 +42,7 @@ async function tokenActivatedEmail(
     token: Token
 ): Promise<string> {
     const mail = new Mail(
-        Mail.contact(ADMIN.NAME, ADMIN.EMAIL),
+        Mail.contact(config.ADMIN.NAME, config.ADMIN.EMAIL),
         Mail.contact(user.email, user.email),
         `${game.name} game token`
     )
@@ -59,11 +62,11 @@ async function tokenCreatedEmail(
     token: Token
 ): Promise<string> {
     const mail = new Mail(
-        Mail.contact(ADMIN.NAME, ADMIN.EMAIL),
+        Mail.contact(config.ADMIN.NAME, config.ADMIN.EMAIL),
         Mail.contact(user.email, user.email),
         `${game.name} game token activation`
     )
-    const link = new URL(`/tokens/${token._id}/`, ADMIN.HOST)
+    const link = new URL(`/tokens/${token._id}/`, config.ADMIN.HOST)
     const html = [
         `<p>Thank you for requesting your ${game.name} game token.</p>`,
         `<p>Please click the <a href=${link.href}>link</a> to activate it.</p>`,
@@ -81,7 +84,7 @@ export async function activateToken(
 ): Promise<void> {
     try {
         const tokens = Token.collection()
-        const _id = Document.id(req.params.id)
+        const _id = Token.id(req.params.id)
         if (!_id)
             throw new CustomError(ErrorType.InvalidRequest, `Invalid tokenId!`)
         const token = await tokens.findOne({ _id })
@@ -98,13 +101,11 @@ export async function activateToken(
         const { gameId, userId } = token
         const active = true
         await tokens.deleteMany({ active, gameId, userId })
-        const update = Document.update<Token>({ active })
-        await tokens.updateOne({ _id: token._id }, { $set: update })
+        await tokens.updateOne({ _id: token._id }, { $set: Token.update({ active }) })
         res.send(
             await tokenActivatedEmail(game, user, token)
         )
     } catch(e) {
-        console.error(e)
         next(e)
     }
 }
@@ -123,7 +124,7 @@ export async function createToken(
         const user =  await User.collection().findOne({ email })
             || await createUser(email)
         const { _id: userId } = user
-        const gameId = Document.id(req.body.gameId)
+        const gameId = Token.id(req.body.gameId)
         if (!gameId)
             throw new CustomError(ErrorType.InvalidRequest, `Invalid gameId!`)
         const game = await Game.collection().findOne({ _id: gameId })
@@ -148,8 +149,9 @@ export async function getTokens(
     next: NextFunction
 ): Promise<void> {
     try {
+        const tokens = await Token.collection().find().toArray()
         res.send(
-            await Token.collection().find().toArray()
+            getResult<Token>(tokens)
         )
     } catch(e) {
         next(e)
@@ -162,7 +164,7 @@ export async function deleteToken(
     next: NextFunction
 ): Promise<void> {
     try {
-        const _id = Document.id(req.params.id)
+        const _id = Token.id(req.params.id)
         if (!_id)
             throw new CustomError(ErrorType.InvalidRequest, `Invalid token id!`)
         res.send(
@@ -180,7 +182,7 @@ export async function updateToken(
 ): Promise<void> {
     try {
         const tokens = Token.collection()
-        const tokenId = Document.id(req.params.id)
+        const tokenId = Token.id(req.params.id)
         if (!tokenId)
             throw new CustomError(ErrorType.InvalidRequest, `Invalid token id!`)
         const token = await tokens.findOne({ _id: tokenId })
@@ -189,9 +191,8 @@ export async function updateToken(
         if (!token.active)
             throw new CustomError(ErrorType.Forbidden, `Token is not activated!`)
         const gameURL = req.body.gameURL || ``
-        const update = Document.update<Token>({ gameURL })
         res.send(
-            await tokens.updateOne({ _id: tokenId }, { $set: update })
+            await tokens.updateOne({ _id: tokenId }, { $set: Token.update({ gameURL }) })
         )
     } catch(e) {
         next(e)

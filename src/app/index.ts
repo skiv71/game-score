@@ -6,17 +6,18 @@ import router from './router'
 
 import { errorHandler } from './router/error'
 
-import { APP } from "../config"
+import config from '@/config'
 
 export default {
     start(): void {
+        const port = config.APP.PORT
         express()
             .use(cors())
             .use(express.json())
             .use(router)
             .use(errorHandler)
-            .listen(APP.PORT, () => {
-                console.log(`app ready, port: ${APP.PORT}`)
+            .listen(port, () => {
+                console.log(`app ready, port: ${port}`)
             })
     }
 }

@@ -1,10 +1,6 @@
-import { type Collection } from "mongodb"
-
-import Document from "../document"
-
 import Mongo from "../mongo"
 
-import { MONGO } from "@config"
+import Document from "../document"
 
 type GameSchema = {
     name: string
@@ -21,8 +17,13 @@ export default class Game extends Document.Class<GameSchema> implements GameSche
         this.name = game.name
     }
 
-    static collection(): Collection<Game> {
-        return Mongo.db().collection<Game>(`games`)
+    public static collection(): Mongo.Collection<Game> {
+        return Mongo.collection<Game>(`games`)
+    }
+    public static update(
+        update: Document.Update<Game>
+    ): Document.UpdateData<Game> {
+        return Document.update<Game>(update)
     }
 
 }

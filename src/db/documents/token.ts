@@ -1,21 +1,17 @@
-import {
-    type Collection,
-    type IndexDescriptionInfo,
-    type ObjectId
-} from "mongodb"
-
 import Document from "../document"
 
 import Mongo from "../mongo"
+
+import type { IndexDescriptionInfo } from "mongodb"
 
 import { randomBytes } from "crypto"
 
 type TokenSchema = {
     active: boolean
     data?: string
-    gameId: ObjectId
+    gameId: Mongo.ObjectId
     gameURL?: string
-    userId: ObjectId
+    userId: Mongo.ObjectId
 } & Partial<Document.Metadata>
 
 const indexes: Document.Index<TokenSchema>[] = [
@@ -37,9 +33,9 @@ export default class Token extends Document.Class<TokenSchema> implements TokenS
 
     readonly active: boolean
     readonly data: string
-    readonly gameId: ObjectId
+    readonly gameId: Mongo.ObjectId
     readonly gameURL?: string | undefined
-    readonly userId: ObjectId
+    readonly userId: Mongo.ObjectId
 
     constructor(
         token: TokenSchema
@@ -51,8 +47,8 @@ export default class Token extends Document.Class<TokenSchema> implements TokenS
         this.userId = token.userId
     }
 
-    public static collection(): Collection<Token> {
-        return Mongo.db().collection<Token>(`tokens`)
+    public static collection(): Mongo.Collection<Token> {
+        return Mongo.collection<Token>(`tokens`)
     }
 
     public static data(): string {
@@ -71,7 +67,14 @@ export default class Token extends Document.Class<TokenSchema> implements TokenS
             indexes
                 .map(o => tokens.createIndex(o.keys, o.options))
         )
-        return tokens.indexes()
+        const list = await tokens.indexes()
+        return list
+    }
+
+    public static update(
+        update: Document.Update<Token>
+    ): Document.UpdateData<Token> {
+        return Document.update<Token>(update)
     }
     
 }
