@@ -37,7 +37,7 @@ export function errorHandler(
     if (err) {
         if (err instanceof CustomError) {
             res.status(err.code).send(err.message)
-            console.error(err)
+            console.error(err.code, err.message)
         } else if (err instanceof Error) {
             res.status(500).send(SERVER_ERROR)
             console.error(err.stack)
