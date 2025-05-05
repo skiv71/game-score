@@ -26,7 +26,8 @@ namespace Mongo {
             username: config.MONGO.DB_USER,
             password: config.MONGO.DB_PASS
         },
-        maxIdleTimeMS: 10000
+//        maxIdleTimeMS: 10000,
+        
     } as const
 
     export function collection<T extends Document>(
