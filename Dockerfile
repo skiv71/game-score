@@ -1,11 +1,11 @@
 FROM debian:12-slim
 
 RUN apt-get update \
-    && apt install -y wget
+    && apt install -y curl
 
-RUN wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
+RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash
 
-RUN nvm install --lts
+RUN apt-get install -y nodejs
 
 WORKDIR /app
 
